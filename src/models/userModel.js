@@ -1,18 +1,17 @@
 const mongoose = require("mongoose");
 
-const AddressSchema = new mongoose.Schema(
-  {
-    street: { type: String, required: true },
-    numberHouse: { type: Number, required: true },
-    district: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    cep: { type: String, required: true },
-    complement: { type: String },
-  },
-  { timestamps: true }
-); // registra datas de criação/modificação
+// equema para endereço
+const AddressSchema = new mongoose.Schema({
+  street: { type: String, required: true },
+  numberHouse: { type: Number, required: true },
+  district: { type: String, required: true },
+  city: { type: String, required: true },
+  state: { type: String, required: true },
+  cep: { type: String, required: true },
+  complement: { type: String },
+});
 
+//esquepa para usuario utilizando o endereço dentro
 const UserSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },

@@ -12,6 +12,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// rotas de usuario
 app.use("/api", userRoutes);
 app.get("/home", (req, res) => {
   res.status(200).json({ msg: "Bem-vindo à API!" });

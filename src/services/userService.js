@@ -5,7 +5,9 @@ const userRepository = require("../repositories/userRepository");
 const registerUser = async (data) => {
   // verifica se o usuário já existe
   const userExists = await userRepository.getUserByEmail(data.email);
-  if (userExists) throw new Error("E-mail já cadastrado!");
+  if (userExists) {
+    throw { status: 409, message: "E-mail já cadastrado!" };
+  }
 
   // criptografa a senha
   const salt = await bcrypt.genSalt(12);
@@ -15,33 +17,44 @@ const registerUser = async (data) => {
   data.password = passwordHash;
 
   // chama o repositório para criar o usuário
-  const user = await userRepository.create(data);
+  const user = await userRepository.Create(data);
 
   // retorna uma resposta após a criação
-  return { msg: "Usuário criado com sucesso!"};
+  return { msg: "Usuário criado com sucesso!" };
 };
 
-const loginUser = async (email, password) => {
-  const user = await userRepository.getUserByEmail(email);
-  if (!user) throw new Error("Usuário não encontrado!");
+const loginUser = async (email, password, role) => {
+  try {
+    // busca o usuario no banco de dados pelo emailpq libera a senha
+    const user = await userRepository.getUserByEmail(email);
+    if (!user) {
+      throw { status: 404, message: "Usuário não encontrado!" };
+    }
 
-  const checkPassword = await bcrypt.compare(password, user.password);
-  if (!checkPassword) throw new Error("Senha inválida!");
+    // verifica a senha com bcrypt q é uma biblioteca
+    const checkPassword = await bcrypt.compare(password, user.password);
+    if (!checkPassword) {
+      throw { status: 401, message: "Senha inválida!" };
+    }
 
-  const secret = process.env.SECRET;
-  const token = jwt.sign({ id: user._id }, secret, { expiresIn: "1h" });
+    if (user.role !== role) {
+      throw { status: 403, message: "Acesso diferente do cadastrado!" };
+    }
 
-  return { msg: "Autenticado com sucesso!", token };
-};
+    // obtem o a chave do token no .env
+    const secret = process.env.SECRET;
 
-const getUserByEmail = async (email) => {
-  const user = await userRepository.getUserByEmail(email);
+    // gera o token JWT
+    const token = jwt.sign({ id: user._id, role: user.role }, secret, {
+      expiresIn: "5h",
+    });
 
-  if (!user) {
-    throw new Error("Usuário não encontrado!");
+    // retorna o resultado para o controller
+    return { message: "Autenticado com sucesso!", token };
+  } catch (error) {
+    // lança o erro para ser tratado no controller
+    throw error;
   }
-
-  return user;
 };
 
-module.exports = { registerUser, loginUser, getUserByEmail };
+module.exports = { registerUser, loginUser };
