@@ -25,7 +25,7 @@ const registerUser = async (data) => {
 
 const loginUser = async (email, password, role) => {
   try {
-    // busca o usuario no banco de dados pelo emailpq libera a senha
+    // busca o usuario no banco de dados pelo email pq libera a senha
     const user = await userRepository.getUserByEmail(email);
     if (!user) {
       throw { status: 404, message: "Usuário não encontrado!" };

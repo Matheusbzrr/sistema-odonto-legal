@@ -21,7 +21,7 @@ const userCreateDTO = z.object({
     district: z.string(),
     city: z.string(),
     state: z.string(),
-    cep: z.string().min(8, "O CEP deve ter pelo menos 8 caracteres."),
+    zipCode: z.string().min(8, "O CEP deve ter pelo menos 8 caracteres."),
     complement: z.string().optional(),
   }),
 });
@@ -40,7 +40,7 @@ const userResponseDTO = z.object({
     district: z.string(),
     city: z.string(),
     state: z.string(),
-    cep: z.string(),
+    zipCode: z.string(),
     complement: z.string().optional().default("Não informado"),
   }),
 });

@@ -7,7 +7,7 @@ const AddressSchema = new mongoose.Schema({
   district: { type: String, required: true },
   city: { type: String, required: true },
   state: { type: String, required: true },
-  cep: { type: String, required: true },
+  zipCode: { type: String, required: true },
   complement: { type: String },
 });
 
