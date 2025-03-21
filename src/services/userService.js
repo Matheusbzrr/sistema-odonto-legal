@@ -3,32 +3,28 @@ const jwt = require("jsonwebtoken");
 const userRepository = require("../repositories/userRepository");
 
 const registerUser = async (data) => {
-  try {
-    // verifica se o usuário já existe
-    const userExists = await userRepository.getUserByEmail(data.email);
-    if (userExists) {
-      throw { status: 409, message: "E-mail já cadastrado!" };
-    }
-
-    // criptografa a senha
-    const salt = await bcrypt.genSalt(12);
-    const passwordHash = await bcrypt.hash(data.password, salt);
-
-    // atualiza o objeto de dados para armazenar a senha criptografada
-    data.password = passwordHash;
-
-    // chama o repositório para criar o usuário
-    await userRepository.Create(data);
-
-    // retorna uma resposta após a criação
-    return { msg: "Usuário criado com sucesso!" };
-  } catch (error) {
-    throw error; // Propaga o erro para ser tratado no controller
+  // verifica se o usuário já existe
+  const userExists = await userRepository.getUserByEmail(data.email);
+  if (userExists) {
+    throw { status: 409, message: "E-mail já cadastrado!" };
   }
+
+  // criptografa a senha
+  const salt = await bcrypt.genSalt(12);
+  const passwordHash = await bcrypt.hash(data.password, salt);
+
+  // atualiza o objeto de dados para armazenar a senha criptografada
+  data.password = passwordHash;
+
+  // chama o repositório para criar o usuário
+  const user = await userRepository.Create(data);
+
+  // retorna uma resposta após a criação
+  return { msg: "Usuário criado com sucesso!" };
 };
 
+
 const loginUser = async (email, password, role) => {
-  try {
     // busca o usuario no banco de dados pelo email pq libera a senha
     const user = await userRepository.getUserByEmail(email);
     if (!user) {
@@ -55,10 +51,6 @@ const loginUser = async (email, password, role) => {
 
     // retorna o resultado para o controller
     return { message: "Autenticado com sucesso!", token };
-  } catch (error) {
-    // lança o erro para ser tratado no controller
-    throw error;
-  }
 };
 
 module.exports = { registerUser, loginUser };
