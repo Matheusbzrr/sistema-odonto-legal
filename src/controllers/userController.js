@@ -5,9 +5,7 @@ const { z } = require("zod");
 const CreateUser = async (req, res) => {
   try {
     // valida a entrada da requisição com o userCreateDTO
-    if (!req.body){
-      return res.status(400).json({ message: "Verifique os dados informados!" });
-    }
+    
     
     // isso valida os dados e lança um erro se algo for invalido
     const validatedData = userDTO.userCreateDTO.parse(req.body); 
