@@ -3,12 +3,12 @@ const userDTO = require("../dtos/userDTO");
 const { z } = require("zod");
 
 const CreateUser = async (req, res) => {
+   // valida se tem algum dado na entrada da requisição com o userCreateDTO
+  if (!req.body){
+    return res.status(400).json({ message: "Verifique os dados informados!" });
+  }
+
   try {
-    // valida a entrada da requisição com o userCreateDTO
-    if (!req.body){
-      return res.status(400).json({ message: "Verifique os dados informados!" });
-    }
-    
     // isso valida os dados e lança um erro se algo for invalido
     const validatedData = userDTO.userCreateDTO.parse(req.body); 
 
@@ -37,13 +37,12 @@ const CreateUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
+  // valida se os dados da requisição estão presentes
+  if (!req.body.email || !req.body.password || !req.body.role) {
+    return res.status(400).json({ message: "Email e senha e a sua identificação são obrigatórios!" });
+  }
+  
   try {
-
-    // valida se os dados da requisição estão presentes
-    if (!req.body.email || !req.body.password || !req.body.role) {
-      return res.status(400).json({ message: "Email e senha e a sua identificação são obrigatórios!" });
-    }
-
     // valida a entrada da requisição com o userLoginDTO
     const validatedData = userDTO.userLoginDTO.parse(req.body); 
 
