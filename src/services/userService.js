@@ -3,24 +3,28 @@ const jwt = require("jsonwebtoken");
 const userRepository = require("../repositories/userRepository");
 
 const registerUser = async (data) => {
-  // verifica se o usuário já existe
-  const userExists = await userRepository.getUserByEmail(data.email);
-  if (userExists) {
-    throw { status: 409, message: "E-mail já cadastrado!" };
+  try {
+    // verifica se o usuário já existe
+    const userExists = await userRepository.getUserByEmail(data.email);
+    if (userExists) {
+      throw { status: 409, message: "E-mail já cadastrado!" };
+    }
+
+    // criptografa a senha
+    const salt = await bcrypt.genSalt(12);
+    const passwordHash = await bcrypt.hash(data.password, salt);
+
+    // atualiza o objeto de dados para armazenar a senha criptografada
+    data.password = passwordHash;
+
+    // chama o repositório para criar o usuário
+    await userRepository.Create(data);
+
+    // retorna uma resposta após a criação
+    return { msg: "Usuário criado com sucesso!" };
+  } catch (error) {
+    throw error; // Propaga o erro para ser tratado no controller
   }
-
-  // criptografa a senha
-  const salt = await bcrypt.genSalt(12);
-  const passwordHash = await bcrypt.hash(data.password, salt);
-
-  // atualiza o objeto de dados para armazenar a senha criptografada
-  data.password = passwordHash;
-
-  // chama o repositório para criar o usuário
-  const user = await userRepository.Create(data);
-
-  // retorna uma resposta após a criação
-  return { msg: "Usuário criado com sucesso!" };
 };
 
 const loginUser = async (email, password, role) => {
