@@ -3,19 +3,19 @@ const userDTO = require("../dtos/userDTO");
 const { z } = require("zod");
 
 const CreateUser = async (req, res) => {
-   // valida se tem algum dado na entrada da requisição com o userCreateDTO
-  if (!req.body){
+  // valida se tem algum dado na entrada da requisição com o userCreateDTO
+  if (!req.body) {
     return res.status(400).json({ message: "Verifique os dados informados!" });
   }
 
   try {
     // isso valida os dados e lança um erro se algo for invalido
-    const validatedData = userDTO.userCreateDTO.parse(req.body); 
+    const validatedData = userDTO.userCreateDTO.parse(req.body);
 
     // chama o serviço para registrar o usuário com os dados validados e recebe uma mesnagem do servico
     const { msg } = await userService.registerUser(validatedData);
 
-    // retorna a mensagem do servico com o status de criação 
+    // retorna a mensagem do servico com o status de criação
     return res.status(201).json({ msg });
   } catch (error) {
     // se o erro for de validação, o zod lança um erro com detalhes
@@ -39,19 +39,21 @@ const CreateUser = async (req, res) => {
 const loginUser = async (req, res) => {
   // valida se os dados da requisição estão presentes
   if (!req.body.email || !req.body.password || !req.body.role) {
-    return res.status(400).json({ message: "Email e senha e a sua identificação são obrigatórios!" });
+    return res.status(400).json({
+      message: "Email e senha e a sua identificação são obrigatórios!",
+    });
   }
-  
+
   try {
     // valida a entrada da requisição com o userLoginDTO
-    const validatedData = userDTO.userLoginDTO.parse(req.body); 
+    const validatedData = userDTO.userLoginDTO.parse(req.body);
 
     // chama o serviço para efetuar o login com os dados validados e recebe um resultado do servico com uma mensagem e o token
     const result = await userService.loginUser(
       validatedData.email,
       validatedData.password,
       validatedData.role
-    ); 
+    );
 
     // retorna a resposta com o status de criação e os dados do token
     return res.status(200).json(result);
@@ -74,4 +76,23 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { CreateUser, loginUser };
+const getAllUsersByAdmin = async (req, res) => {
+  if (req.params.page < 1) {
+    return res.status(400).json({ message: "Página inválida!" });
+  }
+
+  try {
+    
+    const page = req.params.page - 1; // obtém a página a ser consultada e subtrai 1 para transformar a página do cliente em uma página do mongo, pois no mongo começa a contar em 0, isso tbm ajuda o front quando for mandar a pagina e não precisa começar exatamente no 0 la no front
+
+    const users = await userService.getAllUsersByAdmin(page);
+    return res.status(200).json(users);
+  } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { CreateUser, loginUser, getAllUsersByAdmin };

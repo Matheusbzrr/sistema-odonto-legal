@@ -9,13 +9,26 @@ router.get("/", (req, res) => {
 });
 
 // rota teste admin
-router.get("/admin", validateToken("ADMIN"), (req, res) => {
+router.get("/admin", validateToken(["ADMIN"]), (req, res) => {
   res.send("Bem-vindo, ADMIN!");
 });
 
+// rota teste perito e admin
+router.get(
+  "/adminandperito",
+  validateToken(["ADMIN", "PERITO"]),
+  (req, res) => {
+    res.send("Bem-vindo, ADMIN ou PERITO!");
+  }
+);
 
 // toras de usuario
 router.post("/register", userController.CreateUser);
 router.post("/login", userController.loginUser);
+router.get(
+  "/users/:page",
+  validateToken(["ADMIN"]),
+  userController.getAllUsersByAdmin
+);
 
 module.exports = router;

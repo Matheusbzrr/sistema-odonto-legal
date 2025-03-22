@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-module.exports = (requiredRole) => (req, res, next) => {
+module.exports = (allowedRoles) => (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
@@ -15,7 +15,7 @@ module.exports = (requiredRole) => (req, res, next) => {
     req.userRole = decoded.role; // adiciona o role ao request para ser acessado posteriormente
 
     // verifica se o usuário tem a role necessária para acessar a rota
-    if (requiredRole && req.userRole !== requiredRole) {
+    if (allowedRoles.length > 0 && !allowedRoles.includes(req.userRole)) {
       return res.status(403).json({ msg: "Acesso negado! Permissão insuficiente." });
     }
 
