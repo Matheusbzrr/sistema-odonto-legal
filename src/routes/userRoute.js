@@ -3,32 +3,30 @@ const userController = require("../controllers/userController");
 const validateToken = require("../middlewares/validateToken");
 const router = Router();
 
-// rota teste
-router.get("/", (req, res) => {
-  res.json({ message: "API rodando!" });
-});
+// toras de usuario
+router.post("/register", userController.createUser);
+router.post("/login", userController.loginUser);
 
-// rota teste admin
-router.get("/admin", validateToken(["ADMIN"]), (req, res) => {
-  res.send("Bem-vindo, ADMIN!");
-});
-
-// rota teste perito e admin
 router.get(
-  "/adminandperito",
-  validateToken(["ADMIN", "PERITO"]),
-  (req, res) => {
-    res.send("Bem-vindo, ADMIN ou PERITO!");
-  }
+  "/users/approved/:page",
+  validateToken(["ADMIN"]),
+  userController.filterGetUsersStatusApproved
+);
+router.get(
+  "/users/pending/:page",
+  validateToken(["ADMIN"]),
+  userController.filterGetUsersStatusPending
+);
+router.get(
+  "/users/invalid/:page",
+  validateToken(["ADMIN"]),
+  userController.filterGetUsersStatusInvalid
 );
 
-// toras de usuario
-router.post("/register", userController.CreateUser);
-router.post("/login", userController.loginUser);
-router.get(
-  "/users/:page",
+router.put(
+  "/user/status/:id",
   validateToken(["ADMIN"]),
-  userController.getAllUsersByAdmin
+  userController.updateSatusUserById
 );
 
 module.exports = router;

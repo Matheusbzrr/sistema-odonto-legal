@@ -27,6 +27,12 @@ const UserSchema = new mongoose.Schema(
     dateOfBirth: { type: String, required: true },
     address: AddressSchema,
     isActive: { type: Boolean, default: true },
+    status: {
+      type: String,
+      default: "PENDENTE",
+      enum: ["PENDENTE", "APROVADO", "NEGADO"],
+    },
+    approvedBy: { type: String, required: false },
   },
   { timestamps: true }
 );

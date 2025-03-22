@@ -2,7 +2,7 @@ const userService = require("../services/userService");
 const userDTO = require("../dtos/userDTO");
 const { z } = require("zod");
 
-const CreateUser = async (req, res) => {
+const createUser = async (req, res) => {
   // valida se tem algum dado na entrada da requisição com o userCreateDTO
   if (!req.body) {
     return res.status(400).json({ message: "Verifique os dados informados!" });
@@ -76,18 +76,28 @@ const loginUser = async (req, res) => {
   }
 };
 
-const getAllUsersByAdmin = async (req, res) => {
+const filterGetUsersStatusApproved = async (req, res) => {
+  // valida se a pagiana no parametro da url
   if (req.params.page < 1) {
     return res.status(400).json({ message: "Página inválida!" });
   }
-
   try {
-    
-    const page = req.params.page - 1; // obtém a página a ser consultada e subtrai 1 para transformar a página do cliente em uma página do mongo, pois no mongo começa a contar em 0, isso tbm ajuda o front quando for mandar a pagina e não precisa começar exatamente no 0 la no front
+    // obtém a página a ser consultada e subtrai 1 para transformar a página do cliente em uma página do mongo, pois no mongo começa a contar em 0, isso tbm ajuda o front quando for mandar a pagina e não precisa começar exatamente no 0 la no front
+    const page = req.params.page - 1;
 
-    const users = await userService.getAllUsersByAdmin(page);
-    return res.status(200).json(users);
+    // passa a página para o serviço e recebe os usuários aprovados
+    const users = await userService.filterGetUsersApproved(page);
+
+    // transforma os dados dos usuários em um formato de resposta
+    const resUsersDTO = userDTO.userResponseFiltersDTO.parse(users);
+    return res.status(200).json(resUsersDTO);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors, // exibe os erros de validação
+      });
+    }
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
@@ -95,4 +105,111 @@ const getAllUsersByAdmin = async (req, res) => {
   }
 };
 
-module.exports = { CreateUser, loginUser, getAllUsersByAdmin };
+const filterGetUsersStatusPending = async (req, res) => {
+  // valida se a pagiana no parametro da url
+  if (req.params.page < 1) {
+    return res.status(400).json({ message: "Página inválida!" });
+  }
+  try {
+    // obtém a página a ser consultada e subtrai 1 para transformar a página do cliente em uma página do mongo, pois no mongo começa a contar em 0, isso tbm ajuda o front quando for mandar a pagina e não precisa começar exatamente no 0 la no front
+    const page = req.params.page - 1;
+
+    // passa a página para o serviço e recebe os usuários aprovados
+    const users = await userService.filterGetUsersPending(page);
+
+    // transforma os dados dos usuários em um formato de resposta
+    const resUsersDTO = userDTO.userResponseFiltersDTO.parse(users);
+    return res.status(200).json(resUsersDTO);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors, // exibe os erros de validação
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const filterGetUsersStatusInvalid = async (req, res) => {
+  // valida se a pagiana no parametro da url
+  if (req.params.page < 1) {
+    return res.status(400).json({ message: "Página inválida!" });
+  }
+  try {
+    // obtém a página a ser consultada e subtrai 1 para transformar a página do cliente em uma página do mongo, pois no mongo começa a contar em 0, isso tbm ajuda o front quando for mandar a pagina e não precisa começar exatamente no 0 la no front
+    const page = req.params.page - 1;
+
+    // passa a página para o serviço e recebe os usuários aprovados
+    const users = await userService.filterGetUsersInvalid(page);
+
+    // transforma os dados dos usuários em um formato de resposta
+    const resUsersDTO = userDTO.userResponseFiltersDTO.parse(users);
+    return res.status(200).json(resUsersDTO);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors, // exibe os erros de validação
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const updateSatusUserById = async (req, res) => {
+  // valida se o id do usuário e o novo status foram fornecidos
+  if (!req.params.id || !req.body.status) {
+    return res
+      .status(400)
+      .json({ message: "Id do usuário e status são obrigatórios!" });
+  }
+
+  try {
+    const approvedBy = String(req.userId); // pego o Id do user diretamente pois injetado no middleware de autenticação e converte para string
+    const id = req.params.id; // pego o id do usuário a ser atualizado no parametro da requisição (url)
+    const status = req.body.status; // pego o novo status do usuário a ser atualizado no corpo da requisição (playload)
+
+    const data = { status, approvedBy }; // tive problema em passar dois parametros direto no parse, então criei um objeto com os dois parametros
+
+    // valida a entrada da requisição com o userUpdateStatusDTO
+    const validatedData = userDTO.userUpdateStatusDTO.parse(data);
+
+    // chama o serviço para atualizar o status do usuário com os dados validados e recebe um resultado do servico com uma mensagem
+    const result = await userService.updateSatusUser(
+      id,
+      validatedData.status,
+      validatedData.approvedBy
+    );
+    const responseUpdateStatusDTO = await userDTO.responseUpdateStatusDTO.parse(
+      result
+    );
+    return res.status(201).json(responseUpdateStatusDTO);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors, // exibe os erros de validação
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  createUser,
+  loginUser,
+  filterGetUsersStatusApproved,
+  filterGetUsersStatusPending,
+  filterGetUsersStatusInvalid,
+  updateSatusUserById,
+};
