@@ -16,7 +16,7 @@ const userCreateDTO = z.object({
     ),
   address: z.object({
     street: z.string(),
-    numberHouse: z.number(),
+    numberHouse: z.number(), //houseNumber
     district: z.string(),
     city: z.string(),
     state: z.string(),
@@ -41,7 +41,7 @@ const userResponseWithAddressDTO = z.object({
   dateOfBirth: z.string(),
   address: z.object({
     street: z.string(),
-    numberHouse: z.number(),
+    numberHouse: z.number(), //houseNumber
     district: z.string(),
     city: z.string(),
     state: z.string(),
