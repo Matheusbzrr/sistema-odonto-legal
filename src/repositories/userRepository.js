@@ -6,6 +6,11 @@ const create = async (data) => {
   return await user.save();
 };
 
+const getUserByCpf = async (cpf) => {
+  const user = await User.findOne({ cpf });
+  return user;
+};
+
 const getUserById = async (data) => {
   return await User.findById(data);
 };
@@ -15,51 +20,60 @@ const getUserByEmail = async (email) => {
   return await User.findOne({ email });
 };
 
-// busca todos usuarios com status aprovado
-const getUsersApproved = async (offSet, limit) => {
-  return await User.find()
-    .where("status")
-    .equals("APROVADO")
+// busca todos usuarios a partir do status passado
+const getUsersStatus = async (offSet, limit, data) => {
+  return await User.find({ status: data })
     .skip(offSet)
     .limit(limit)
     .select("-password");
 };
 
-// busca todos usuarios com status pendente
-const getUsersPending = async (offSet, limit) => {
-  return await User.find()
-    .where("status")
-    .equals("PENDENTE")
-    .skip(offSet)
-    .limit(limit)
-    .select("-password");
-};
-
-// busca todos usuarios com status negado
-const getUsersInvalid = async (offSet, limit) => {
-  return await User.find()
-    .where("status")
-    .equals("NEGADO")
-    .skip(offSet)
-    .limit(limit)
-    .select("-password");
-};
-
-const updateSatus = async (id, newStatus, identification) => {
+const updateStatus = async (id, newStatus, identification) => {
   const updateStatusUser = await User.findByIdAndUpdate(
     id,
-    { status: newStatus, approvedBy: identification },
+    { status: newStatus, responseBy: identification },
     { new: true }
   );
   return updateStatusUser;
 };
 
+const updatePassword = async (id, newPassword) => {
+  const updatePasswordUser = await User.findByIdAndUpdate(
+    id,
+    { password: newPassword },
+    { new: true }
+  );
+  return updatePasswordUser;
+};
+
+const updateProfile = async (id, newData) => {
+  const updateProfileUser = await User.findByIdAndUpdate(id, newData, {
+    new: true,
+  });
+  return updateProfileUser;
+};
+
+const updateUserAddress = async (userId, newAddress) => {
+  return await User.findByIdAndUpdate(
+    userId,
+    { $set: { address: newAddress } },
+    { new: true }
+  );
+};
+
+const deleteUser = async (id) => {
+  await User.findByIdAndDelete(id);
+};
+
 module.exports = {
   create,
+  getUserByCpf,
   getUserById,
   getUserByEmail,
-  getUsersApproved,
-  getUsersPending,
-  getUsersInvalid,
-  updateSatus,
+  getUsersStatus,
+  updateStatus,
+  updatePassword,
+  updateProfile,
+  updateUserAddress,
+  deleteUser,
 };

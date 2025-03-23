@@ -30,10 +30,14 @@ const loginUser = async (email, password, role) => {
     throw { status: 404, message: "Usuário não encontrado!" };
   }
 
-  // verifica se o status do usuario, se for pendente ele não faz login. 
+  // verifica se o status do usuario, se for pendente ele não faz login.
   // ATENÇÃO!!!!! se voce ainda não ier um user admin com o status aprovado, caltera direto no banco de dados o status para APROVADO (em maiusculo mesmo)
-  if (user.status === "PENDENTE" || user.status === "NEGADO") {
+  if (user.status === "PENDENTE") {
     throw { status: 403, message: "Usuário pendente de confirmação!" };
+  }
+
+  if (user.status === "NEGADO") {
+    throw { status: 403, message: "Usuário sem autorização de acesso!" };
   }
 
   // verifica a senha com bcrypt q é uma biblioteca
@@ -58,13 +62,23 @@ const loginUser = async (email, password, role) => {
   return { message: "Autenticado com sucesso!", token };
 };
 
+// buscar um perfil do usuario
+const getUserById = async (id) => {
+  const user = await userRepository.getUserById(id);
+  if (!user) {
+    throw { status: 404, message: "Usuário não encontrado!" };
+  }
+  return user;
+};
+
 // filtro de admin pra procurar os aprovados
-const filterGetUsersApproved = async (page) => {
-  const limit = 10; // Limite de itens (nesse caso users) por página, pode alterar pra testar
-  const offSet = page * limit; // Calcula o ponto de partida baseado na página solicitada, ou seja, se eu passar 1 ele vai multiplicar o  0 da pagina * o limite que é 10 e mostar a partir do 0 até o 9 (os 10 primeiros) ignorando os anteriores, se eu passar page 1 ele vai calcular a partir do 10 até o 19 ignorando os anteriores e assim sucessivamente
+const filterGetUsersStatus = async (page, data) => {
+  const limit = 3; // Limite de itens (nesse caso users) por página, pode alterar pra testar
+  const offSet = page * limit; // Calcula o ponto de partida baseado na página solicitada, ou seja, se eu passar 1 ele vai multiplicar o  1 da pagina * o limite que é 10 e mostar a partir do 0 até o 9 (os 10 primeiros) ignorando os anteriores, se eu passar page 2 ele vai calcular a partir do 10 até o 19 ignorando os anteriores e assim sucessivamente
 
+  const status = data;
   // busca todos usuarios com status APROVADO no banco
-  const users = await userRepository.getUsersApproved(offSet, limit);
+  const users = await userRepository.getUsersStatus(offSet, limit, status);
 
   if (users.length === 0) {
     throw { status: 404, message: "Nenhum usuário encontrado!" };
@@ -74,63 +88,93 @@ const filterGetUsersApproved = async (page) => {
   return users;
 };
 
-// filtro de admin pra procurar os pendentes
-const filterGetUsersPending = async (page) => {
-  const limit = 10; // Limite de itens (nesse caso users) por página, pode alterar pra testar
-  const offSet = page * limit; // Calcula o ponto de partida baseado na página solicitada, ou seja, se eu passar 1 ele vai multiplicar o  0 da pagina * o limite que é 10 e mostar a partir do 0 até o 9 (os 10 primeiros) ignorando os anteriores, se eu passar page 1 ele vai calcular a partir do 10 até o 19 ignorando os anteriores e assim sucessivamente
-
-  // busca todos usuarios com status PENDENTES no banco
-  const users = await userRepository.getUsersPending(offSet, limit);
-
-  if (users.length === 0) {
-    throw { status: 404, message: "Nenhum usuário encontrado!" };
-  }
-
-  // retorna os resultados para o controller
-  return users;
-};
-
-// filtro de admin pra procurar os negados
-const filterGetUsersInvalid = async (page) => {
-  const limit = 10; // Limite de itens (nesse caso users) por página, pode alterar pra testar
-  const offSet = page * limit; // Calcula o ponto de partida baseado na página solicitada, ou seja, se eu passar 1 ele vai multiplicar o  0 da pagina * o limite que é 10 e mostar a partir do 0 até o 9 (os 10 primeiros) ignorando os anteriores, se eu passar page 1 ele vai calcular a partir do 10 até o 19 ignorando os anteriores e assim sucessivamente
-
-  // busca todos usuarios com status NEGADOS no banco
-  const users = await userRepository.getUsersInvalid(offSet, limit);
-
-  if (users.length === 0) {
-    throw { status: 404, message: "Nenhum usuário encontrado!" };
-  }
-
-  // retorna os resultados para o controller
-  return users;
-};
-
-const updateSatusUser = async (id, status, approvedBy) => {
-  const validateApprover = await userRepository.getUserById(approvedBy);
+// att status de usuario
+const updateStatusUser = async (id, status, responseBy) => {
+  const validateApprover = await userRepository.getUserById(responseBy);
   if (!validateApprover) {
     throw { status: 404, message: "Usuário não encontrado!" };
   }
   // atualiza o status do usuario no banco
-  const user = await userRepository.updateSatus(id, status, validateApprover.name);
+  const user = await userRepository.updateStatus(
+    id,
+    status,
+    validateApprover.name
+  );
 
   if (!user) {
     throw { status: 404, message: "Usuário não encontrado!" };
   }
 
-  if(user.status !== status){
+  if (user.status !== status) {
     throw { status: 422, message: "Status inválido!" };
   }
+};
 
-  // retorna a resposta para o controller
-  return user;
-}
+// att senha (para antes de entrar sistema)
+const updatePasswordUser = async (email, newPassword) => {
+  const validateEmail = await userRepository.getUserByEmail(email);
+
+  if (!validateEmail) {
+    throw { status: 404, message: "Usuário não encontrado!" };
+  }
+
+  // criptografa a nova senha
+  const salt = await bcrypt.genSalt(12);
+  const passwordHash = await bcrypt.hash(newPassword, salt);
+
+  // atualiza a senha do usuario no banco
+  await userRepository.updatePassword(validateEmail._id, passwordHash);
+};
+
+const updateProfile = async (id, data) => {
+  const user = await userRepository.getUserById(id);
+  if (!user) {
+    throw { status: 404, message: "Usuário não encontrado!" };
+  }
+
+  // verifica se o email novo é diferente do antigo para pode atualizar, se for igual o antigo a requisição acontece mas nao muda nada, se for diferente ele busca algum usuario com o email que será passado, se encontrar, devolve um erro, senao atualiza o campo.
+  if (data.email && data.email !== user.email) {
+    const validateEmail = await userRepository.getUserByEmail(data.email);
+    if (validateEmail) {
+      throw { status: 409, message: "E-mail já cadastrado!" };
+    }
+  }
+
+  // atualiza os dados do usuario no banco
+  await userRepository.updateProfile(id, data);
+};
+
+const updateAddress = async (id, data) => {
+  const user = await userRepository.getUserById(id);
+  if (!user) {
+    throw { status: 404, message: "Usuário não encontrado!" };
+  }
+  // atualiza os dados do endereço no banco
+  const updatedUser = await userRepository.updateUserAddress(id, data);
+};
+
+const deleteUser = async (cpf) => {
+  const user = await userRepository.getUserByCpf(cpf);
+
+  if (!user) {
+    throw { status: 404, message: "Usuário não encontrado!" };
+  }
+  // deleta o usuario do banco de dados
+  const userDeleted = await userRepository.deleteUser(user._id);
+
+  if (userDeleted) {
+    throw { status: 404, message: "Falha ao deletar usuário!" };
+  }
+};
 
 module.exports = {
   registerUser,
   loginUser,
-  filterGetUsersApproved,
-  filterGetUsersPending,
-  filterGetUsersInvalid,
-  updateSatusUser,
+  getUserById,
+  filterGetUsersStatus,
+  updateStatusUser,
+  updatePasswordUser,
+  updateProfile,
+  updateAddress,
+  deleteUser,
 };

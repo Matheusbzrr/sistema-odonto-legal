@@ -3,30 +3,51 @@ const userController = require("../controllers/userController");
 const validateToken = require("../middlewares/validateToken");
 const router = Router();
 
-// toras de usuario
+// rotas comuns á todos usuarios
 router.post("/register", userController.createUser);
 router.post("/login", userController.loginUser);
+router.patch("/alter/pass", userController.updatePassword);
 
+// busca perfil do usuario
 router.get(
-  "/users/approved/:page",
-  validateToken(["ADMIN"]),
-  userController.filterGetUsersStatusApproved
-);
-router.get(
-  "/users/pending/:page",
-  validateToken(["ADMIN"]),
-  userController.filterGetUsersStatusPending
-);
-router.get(
-  "/users/invalid/:page",
-  validateToken(["ADMIN"]),
-  userController.filterGetUsersStatusInvalid
+  "/profile",
+  validateToken(["ADMIN", "PERITO", "ASSISTENTE"]), // a validacao ta com todas as roles mas so server mesmo nesse caso pra injetar o id do usuario e a role pelo middleware
+  userController.getProfileUser
 );
 
-router.put(
+// filtro para buscar usuarios aprovados na aplicação
+router.get(
+  "/users/filter/:page",
+  validateToken(["ADMIN"]),
+  userController.filterGetUsersStatus
+);
+
+// att status
+router.patch(
   "/user/status/:id",
   validateToken(["ADMIN"]),
-  userController.updateSatusUserById
+  userController.updateStatusUserById
+);
+
+// edita perfil do usuario
+router.put(
+  "/user/profile",
+  validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
+  userController.updateProfile
+);
+
+// edita endereço usuario
+router.put(
+  "/user/address",
+  validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
+  userController.updateAddress
+);
+
+//admin exclui usuario
+router.delete(
+  "/user/delete",
+  validateToken(["ADMIN"]),
+  userController.deleteUser
 );
 
 module.exports = router;

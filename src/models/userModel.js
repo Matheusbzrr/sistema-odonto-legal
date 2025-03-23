@@ -32,7 +32,7 @@ const UserSchema = new mongoose.Schema(
       default: "PENDENTE",
       enum: ["PENDENTE", "APROVADO", "NEGADO"],
     },
-    approvedBy: { type: String, required: false },
+    responseBy: { type: String, required: false },
   },
   { timestamps: true }
 );
