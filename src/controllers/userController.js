@@ -200,12 +200,16 @@ const updatePassword = async (req, res) => {
   try {
     const validatedData = userDTO.updatePasswordDTO.parse({ email, password });
 
-    await userService.updatePasswordUser(
+    const result = await userService.updatePasswordUser(
       validatedData.email,
       validatedData.password
     );
 
-    return res.status(201).json("Senha alterada com sucesso!");
+    return res
+      .status(201)
+      .json(
+        result
+      );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({

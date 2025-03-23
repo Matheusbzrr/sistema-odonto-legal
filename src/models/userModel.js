@@ -32,6 +32,10 @@ const UserSchema = new mongoose.Schema(
       default: "PENDENTE",
       enum: ["PENDENTE", "APROVADO", "NEGADO"],
     },
+    solicitationTitle: {
+      type: String,
+      default: "Solicito a criação de um usuário",
+    },
     responseBy: { type: String, required: false },
   },
   { timestamps: true }

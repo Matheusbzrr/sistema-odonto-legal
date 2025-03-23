@@ -2,7 +2,7 @@ const { z } = require("zod");
 
 const validEnumDTO = z.object({
   status: z.enum(["PENDENTE", "APROVADO", "NEGADO"]),
-})
+});
 
 // valida dados do endereço
 const addressCreateDTO = z.object({
@@ -29,7 +29,7 @@ const userCreateDTO = z.object({
       /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/,
       "A data de nascimento deve estar no formato DD/MM/YYYY."
     ),
-  address: addressCreateDTO
+  address: addressCreateDTO,
 });
 
 // valida os dados para o login
@@ -67,6 +67,7 @@ const userResponseFiltersDTO = z.array(
     role: z.string(),
     cpf: z.string(),
     status: z.string(),
+    solicitationTitle: z.string(),
     responseBy: z.string().optional(),
   })
 );
@@ -96,8 +97,7 @@ const updateProfileDTO = z.object({
   name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
   lastName: z.string().min(2, "O sobrenome deve ter pelo menos 2 caracteres."),
   email: z.string().email("E-mail inválido."),
-})
-
+});
 
 module.exports = {
   validEnumDTO,
@@ -109,5 +109,5 @@ module.exports = {
   userUpdateStatusDTO,
   responseUpdateStatusDTO,
   updatePasswordDTO,
-  updateProfileDTO
+  updateProfileDTO,
 };

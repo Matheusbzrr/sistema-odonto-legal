@@ -17,7 +17,7 @@ const registerUser = async (data) => {
   data.password = passwordHash;
 
   // chama o repositório para criar o usuário
-  const user = await userRepository.create(data);
+  await userRepository.create(data);
 
   // retorna uma resposta após a criação
   return { msg: "Usuário criado com sucesso!" };
@@ -33,7 +33,7 @@ const loginUser = async (email, password, role) => {
   // verifica se o status do usuario, se for pendente ele não faz login.
   // ATENÇÃO!!!!! se voce ainda não ier um user admin com o status aprovado, caltera direto no banco de dados o status para APROVADO (em maiusculo mesmo)
   if (user.status === "PENDENTE") {
-    throw { status: 403, message: "Usuário pendente de confirmação!" };
+    throw { status: 403, message: "Usuário com acesso pendente! Aguarde sua autorização." };
   }
 
   if (user.status === "NEGADO") {
@@ -77,7 +77,7 @@ const filterGetUsersStatus = async (page, data) => {
   const offSet = page * limit; // Calcula o ponto de partida baseado na página solicitada, ou seja, se eu passar 1 ele vai multiplicar o  1 da pagina * o limite que é 10 e mostar a partir do 0 até o 9 (os 10 primeiros) ignorando os anteriores, se eu passar page 2 ele vai calcular a partir do 10 até o 19 ignorando os anteriores e assim sucessivamente
 
   const status = data;
-  // busca todos usuarios com status APROVADO no banco
+  // busca todos usuarios com o tipo de status passado na requisição
   const users = await userRepository.getUsersStatus(offSet, limit, status);
 
   if (users.length === 0) {
@@ -94,36 +94,69 @@ const updateStatusUser = async (id, status, responseBy) => {
   if (!validateApprover) {
     throw { status: 404, message: "Usuário não encontrado!" };
   }
-  // atualiza o status do usuario no banco
-  const user = await userRepository.updateStatus(
-    id,
-    status,
-    validateApprover.name
-  );
+
+  const user = await userRepository.getUserById(id);
 
   if (!user) {
     throw { status: 404, message: "Usuário não encontrado!" };
   }
 
-  if (user.status !== status) {
-    throw { status: 422, message: "Status inválido!" };
+  if (user.status === status) {
+    throw {
+      status: 403,
+      message: "Não é possivel alterar para o mesmo status presente no.",
+    };
   }
+
+  await userRepository.updateStatus(
+    id,
+    status,
+    validateApprover.name
+  );
+
+  return { msg: "Status do usuário atualizado com sucesso!" };
 };
 
 // att senha (para antes de entrar sistema)
 const updatePasswordUser = async (email, newPassword) => {
-  const validateEmail = await userRepository.getUserByEmail(email);
+  // Busca usuário pelo email
+  const user = await userRepository.getUserByEmail(email);
 
-  if (!validateEmail) {
+  if (!user) {
     throw { status: 404, message: "Usuário não encontrado!" };
   }
 
-  // criptografa a nova senha
+  // Verifica status do usuário antes de continuar
+  if (user.status === "PENDENTE") {
+    throw {
+      status: 403,
+      message:
+        "Há uma pendência no acesso do usuário. Aguarde aprovação.",
+    };
+  }
+
+  if (user.status === "NEGADO") {
+    throw { status: 403, message: "Usuário sem autorização de acesso!" };
+  }
+
+
+  // Criptografa a nova senha
   const salt = await bcrypt.genSalt(12);
   const passwordHash = await bcrypt.hash(newPassword, salt);
 
-  // atualiza a senha do usuario no banco
-  await userRepository.updatePassword(validateEmail._id, passwordHash);
+  // Define a solicitação e status como PENDENTE
+  const solicitationTitle = "Última solicitação: Mudar a senha do usuário";
+  const status = "PENDENTE";
+  const responseBy = "";
+
+  // Atualiza o status para "PENDENTE" antes de alterar a senha
+  await userRepository.updatePassword(user._id, passwordHash, solicitationTitle, status, responseBy)
+
+  // Retorna o resultado para o controller
+  return {
+    message:
+      "Senha alterada com sucesso! Aguarde a liberação do seu acesso na plataforma",
+  };
 };
 
 const updateProfile = async (id, data) => {

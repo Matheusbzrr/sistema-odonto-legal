@@ -37,10 +37,21 @@ const updateStatus = async (id, newStatus, identification) => {
   return updateStatusUser;
 };
 
-const updatePassword = async (id, newPassword) => {
+const updatePassword = async (
+  id,
+  newPassword,
+  newSolicitation,
+  newStatus,
+  newResponseBy
+) => {
   const updatePasswordUser = await User.findByIdAndUpdate(
     id,
-    { password: newPassword },
+    {
+      password: newPassword,
+      solicitationTitle: newSolicitation,
+      status: newStatus,
+      responseBy: newResponseBy,
+    },
     { new: true }
   );
   return updatePasswordUser;

@@ -6,7 +6,7 @@ const router = Router();
 // rotas comuns á todos usuarios
 router.post("/register", userController.createUser);
 router.post("/login", userController.loginUser);
-router.patch("/alter/pass", userController.updatePassword);
+router.put("/alter/pass", userController.updatePassword);
 
 // busca perfil do usuario
 router.get(
@@ -23,7 +23,7 @@ router.get(
 );
 
 // att status
-router.patch(
+router.put(
   "/user/status/:id",
   validateToken(["ADMIN"]),
   userController.updateStatusUserById
