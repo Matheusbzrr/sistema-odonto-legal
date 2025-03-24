@@ -1,4 +1,4 @@
-const { z, INVALID, object } = require("zod");
+const { z} = require("zod");
 
 const caseCreateDTO = z.object({
     nic: z.string().min(2, "O nic é obrigatório." ),
@@ -15,11 +15,11 @@ const caseCreateDTO = z.object({
 });
 
 //DTO para resposta de caso único
-const caseResponseDTO = object({
+const caseResponseDTO = z.object({
     nic: z.string(),
     title: z.string(),
     status: z.enum(["PENDENTE", "FINALIZADO"]),
-    openedAt: z.string,
+    openedAt: z.string(),
     closedAt: z.string().optional(),
     inquiryNumber: z.string(),
     caseType: z.string(),
@@ -36,7 +36,7 @@ const caseListDTO = z.array(caseResponseDTO);
 
 // DTO para atualização de status de caso
 
-const caseUpdateStatus = z.object({
+const caseUpdateStatusDTO= z.object({
     status: z.enum(["PENDENTE", "FINALIZADO"]),
     closedAt: z.string().optional(),
 });
@@ -45,11 +45,11 @@ module.exports = {
     caseCreateDTO,
     caseResponseDTO,
     caseListDTO,
-    caseUpdateStatusDTO,
+    caseUpdateStatusDTO
+
 };
 
 
 
 
 
-// faço uma resposta de filtro ja que estou utilizando o list?

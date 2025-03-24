@@ -9,7 +9,7 @@ const LocationSchema = new mongoose.Schema({
 // esquema para o caso 
 const caseSchema = new mongoose.Schema({
     nic: { type: String, required: true, unique: true }, 
-    titulo: { type: String, required: true },
+    title: { type: String, required: true },
     status: {
         type: String,
         enum: ["EM ANDAMENTO", "FINALIZADO"],
