@@ -12,13 +12,13 @@ const caseSchema = new mongoose.Schema({
     title: { type: String, required: true },
     status: {
         type: String,
-        enum: ["EM ANDAMENTO", "FINALIZADO"],
-        default: "EM ANDAMENTO",
+        enum: ["PENDENTE", "FINALIZADO"],
+        default: "PENDENTE",
         required: true
     },
     openedAt: { type: Date, default: Date.now},
     closedAt: { type: Date},
-    inquiryNumber: {type: Number, required: true},
+    inquiryNumber: { type: String, required: true, unique: true },
     role: {type: String, required: true},
     caseType: {type: String},
     observations: {type: String},
