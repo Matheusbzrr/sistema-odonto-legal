@@ -23,7 +23,7 @@ const caseResponseDTO = z.object({
     closedAt: z.string().optional(),
     inquiryNumber: z.string(),
     caseType: z.string(),
-    observations: z.string(),
+    observations: z.string().optional(),
     location: z.object({
         latitude: z.string().optional(),
         longitude: z.string().optional()
