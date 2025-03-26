@@ -27,6 +27,10 @@ const getCasesByStatus = async (status, offSet, limit) => {
     .limit(limit);
 };
 
+const getCaseByNic = async (nic) => {
+    return await Case.findOne({ nic });
+  };
+
 //atualiza o status de um caso e define a data de fechamento se for finalizado
 const updateCaseStatus = async (id, newStatus, closedAt = null) => {
     const updateData = { status: newStatus};
@@ -42,4 +46,5 @@ module.exports = {
     getAllCases,
     getCasesByStatus,
     updateCaseStatus,
+    getCaseByNic,
   };
