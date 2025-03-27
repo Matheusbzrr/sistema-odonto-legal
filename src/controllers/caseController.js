@@ -9,7 +9,7 @@ const createCase = async (req, res) => {
   }
 
   try {
-    const validatedData = caseDTO.caseCreateDTO.parse(req.body);
+    const validatedData = caseDTO.caseCreateDTO.parse(req.body, req.role);
     const result = await caseService.createCase(validatedData);
     return res.status(201).json(result);
   } catch (error) {

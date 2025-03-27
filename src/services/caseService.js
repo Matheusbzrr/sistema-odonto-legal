@@ -8,11 +8,6 @@ const {
 
 // cria novo caso
 const createCase = async (data) => {
-  const validatedData = caseCreateDTO.safeParse(data);
-  if (!validatedData.success) {
-    const errorMessage = validatedData.error.errors[0].message;
-    throw { status: 400, message: errorMessage };
-  }
 
   // verifica se NIC já existe
   const existingCase = await caseRepository.getCaseByNic(data.nic);

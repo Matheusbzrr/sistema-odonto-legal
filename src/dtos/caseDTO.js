@@ -11,7 +11,7 @@ const caseCreateDTO = z.object({
     location: z.object({
         latitude: z.string().optional(), 
         longitude: z.string().optional()
-    }),
+    }).optional(),
 });
 
 //DTO para resposta de caso único
@@ -27,7 +27,7 @@ const caseResponseDTO = z.object({
     location: z.object({
         latitude: z.string().optional(),
         longitude: z.string().optional()
-    }),
+    }).optional(),
 });
 
 //DTO para resposta de lista de casos
