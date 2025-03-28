@@ -2,6 +2,7 @@ const userService = require("../services/userService");
 const userDTO = require("../dtos/userDTO");
 const { z } = require("zod");
 
+// criar usuario
 const createUser = async (req, res) => {
   // valida se tem algum dado na entrada da requisição com o userCreateDTO
   if (!req.body) {
@@ -36,6 +37,7 @@ const createUser = async (req, res) => {
   }
 };
 
+// realizar login(avaliar dps a separação a nivel de arquivos/pastas)
 const loginUser = async (req, res) => {
   // valida se os dados da requisição estão presentes
   if (!req.body.email || !req.body.password || !req.body.role) {
@@ -76,6 +78,7 @@ const loginUser = async (req, res) => {
   }
 };
 
+// chama o perfil do usuario logado
 const getProfileUser = async (req, res) => {
   console.log(req.userId);
   // valida se o id do usuario está presente na requisição injetado pelo middleware de autenticação
@@ -103,6 +106,7 @@ const getProfileUser = async (req, res) => {
   }
 };
 
+// filta o status da solicitação
 const filterGetUsersStatus = async (req, res) => {
   // valida se a pagiana no parametro da url
   if (req.params.page < 1) {
@@ -146,6 +150,7 @@ const filterGetUsersStatus = async (req, res) => {
   }
 };
 
+// atualiza o status do usuario pelo id
 const updateStatusUserById = async (req, res) => {
   // valida se o id do usuário e o novo status foram fornecidos
   if (!req.params.id || !req.body.status) {
@@ -171,7 +176,7 @@ const updateStatusUserById = async (req, res) => {
       validatedData.responseBy
     );
 
-    return res.status(201).json("Status alterado com sucesso!");
+    return res.status(201).json();
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
@@ -186,6 +191,7 @@ const updateStatusUserById = async (req, res) => {
   }
 };
 
+// usuario altera sua senha (rota pulica)
 const updatePassword = async (req, res) => {
   const { email, password } = req.body;
 
@@ -198,18 +204,15 @@ const updatePassword = async (req, res) => {
   }
 
   try {
+    // valida email e senha
     const validatedData = userDTO.updatePasswordDTO.parse({ email, password });
-
+    // envia email e senha validado
     const result = await userService.updatePasswordUser(
       validatedData.email,
       validatedData.password
     );
-
-    return res
-      .status(201)
-      .json(
-        result
-      );
+    // recebe a resposta
+    return res.status(201).json(result);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
@@ -224,6 +227,38 @@ const updatePassword = async (req, res) => {
   }
 };
 
+// admin altera senha do usuario
+const updatePasswordByAdmin = async (req, res) => {
+  if (!req.body.email || !req.body.password) {
+    return res.status(401).json({ message: "dados invalidos" });
+  }
+
+  try {
+    const data = req.body;
+    const adminId = req.userId;
+
+    const validatedData = userDTO.updatePasswordDTO.parse(data);
+    const result = await userService.updatePasswordByAdmin(
+      adminId,
+      validatedData.email,
+      validatedData.password
+    );
+    return res.status(201).json(result);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors, // exibe os erros de validação
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// usuario altera alguns dados do seu perfil
 const updateProfile = async (req, res) => {
   const data = req.body;
   const userId = req.userId;
@@ -248,6 +283,7 @@ const updateProfile = async (req, res) => {
   }
 };
 
+// usuario altera dados de endereço
 const updateAddress = async (req, res) => {
   const user = req.userId;
   const address = req.body;
@@ -275,6 +311,7 @@ const updateAddress = async (req, res) => {
   }
 };
 
+// admin deleta um usuario
 const deleteUser = async (req, res) => {
   const cpf = req.body.cpf;
   if (!cpf) {
@@ -299,6 +336,7 @@ module.exports = {
   filterGetUsersStatus,
   updateStatusUserById,
   updatePassword,
+  updatePasswordByAdmin,
   updateProfile,
   updateAddress,
   deleteUser,

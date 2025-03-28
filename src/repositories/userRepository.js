@@ -57,6 +57,16 @@ const updatePassword = async (
   return updatePasswordUser;
 };
 
+const updatePasswordByAdmin = async (_id, passwordHash, responseBy) => {
+  await User.findByIdAndUpdate(_id, {
+    password: passwordHash,
+    status: "APROVADO",
+    responseBy: responseBy,
+  });
+
+  return;
+};
+
 const updateProfile = async (id, newData) => {
   const updateProfileUser = await User.findByIdAndUpdate(id, newData, {
     new: true,
@@ -84,6 +94,7 @@ module.exports = {
   getUsersStatus,
   updateStatus,
   updatePassword,
+  updatePasswordByAdmin,
   updateProfile,
   updateUserAddress,
   deleteUser,

@@ -4,7 +4,7 @@ const app = express();
 const userRoutes = require("./src/routes/userRoute");
 
 const corsOptions = {
-  origin: "http://127.0.0.1:5501",
+  origin: "*",
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: "Content-Type, Authorization",
 };

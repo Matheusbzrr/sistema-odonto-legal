@@ -33,11 +33,18 @@ const loginUser = async (email, password, role) => {
   // verifica se o status do usuario, se for pendente ele não faz login.
   // ATENÇÃO!!!!! se voce ainda não ier um user admin com o status aprovado, caltera direto no banco de dados o status para APROVADO (em maiusculo mesmo)
   if (user.status === "PENDENTE") {
-    throw { status: 403, message: "Usuário com acesso pendente! Aguarde sua autorização." };
+    throw {
+      status: 403,
+      message: "Usuário com acesso pendente! Aguarde sua autorização.",
+    };
   }
 
   if (user.status === "NEGADO") {
-    throw { status: 403, message: "Usuário sem autorização de acesso!" };
+    throw {
+      status: 403,
+      message:
+        "Usuário sem autorização de acesso! Entre em contato com um administrador para verificar o ocorrido e solicite uma nova senha.",
+    };
   }
 
   // verifica a senha com bcrypt q é uma biblioteca
@@ -108,16 +115,12 @@ const updateStatusUser = async (id, status, responseBy) => {
     };
   }
 
-  await userRepository.updateStatus(
-    id,
-    status,
-    validateApprover.name
-  );
+  await userRepository.updateStatus(id, status, validateApprover.name);
 
   return { msg: "Status do usuário atualizado com sucesso!" };
 };
 
-// att senha (para antes de entrar sistema)
+// atualiza senha de usuario e solicita um acesso
 const updatePasswordUser = async (email, newPassword) => {
   // Busca usuário pelo email
   const user = await userRepository.getUserByEmail(email);
@@ -130,16 +133,17 @@ const updatePasswordUser = async (email, newPassword) => {
   if (user.status === "PENDENTE") {
     throw {
       status: 403,
-      message:
-        "Há uma pendência no acesso do usuário. Aguarde aprovação.",
+      message: "Há uma pendência no acesso do usuário. Aguarde aprovação.",
     };
   }
 
-  if (user.status === "NEGADO") {
-    throw { status: 403, message: "Usuário sem autorização de acesso!" };
+  if (user.status === "NEGADO"){
+    throw {
+      status: 403,
+      message:
+        "Você não tem permissão para alterar a senha do usuário sem autorização. Entre em contato com um administrador para verificar o ocorrido e solicite uma nova senha.",
+    };
   }
-
-
   // Criptografa a nova senha
   const salt = await bcrypt.genSalt(12);
   const passwordHash = await bcrypt.hash(newPassword, salt);
@@ -150,14 +154,62 @@ const updatePasswordUser = async (email, newPassword) => {
   const responseBy = "";
 
   // Atualiza o status para "PENDENTE" antes de alterar a senha
-  await userRepository.updatePassword(user._id, passwordHash, solicitationTitle, status, responseBy)
+  await userRepository.updatePassword(
+    user._id,
+    passwordHash,
+    solicitationTitle,
+    status,
+    responseBy
+  );
 
   // Retorna o resultado para o controller
   return {
     message:
-      "Senha alterada com sucesso! Aguarde a liberação do seu acesso na plataforma",
+      "Sua senha foi alterada mas é necessário um administrador liberar o acesso a plataforma. Aguarde. ",
   };
 };
+
+// admin altera senha do usuario 
+const  updatePasswordByAdmin = async (adminId, email, password) => {
+  const userAdmin = await userRepository.getUserById(adminId);
+  const responseBy = userAdmin.name
+
+
+  const userToBeEditaded = await userRepository.getUserByEmail(email);
+
+  if (!userToBeEditaded) {
+    throw { status: 404, message: "Usuário não encontrado!" };
+  }
+
+  if (userToBeEditaded.status === "APROVADO") {
+    throw {
+      status: 403,
+      message: "Não é possível alterar a senha de um de maneira não solicitada.",
+    };
+  }
+
+  if (userToBeEditaded.status === "PENDENTE"){
+    throw {
+      status: 403,
+      message: "Há uma solicitção pendente. Por favor, responda.",
+    };
+  }
+
+  const salt = await bcrypt.genSalt(12);
+  const passwordHash = await bcrypt.hash(password, salt);
+
+  
+  await userRepository.updatePasswordByAdmin(
+    userToBeEditaded._id,
+    passwordHash,
+    responseBy
+  )
+
+  return { message: "Senha do usuário alterada com sucesso!" };
+
+
+
+}
 
 const updateProfile = async (id, data) => {
   const user = await userRepository.getUserById(id);
@@ -207,6 +259,7 @@ module.exports = {
   filterGetUsersStatus,
   updateStatusUser,
   updatePasswordUser,
+  updatePasswordByAdmin,
   updateProfile,
   updateAddress,
   deleteUser,

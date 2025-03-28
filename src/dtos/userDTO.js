@@ -67,7 +67,7 @@ const userResponseFiltersDTO = z.array(
     role: z.string(),
     cpf: z.string(),
     status: z.string(),
-    solicitationTitle: z.string(),
+    solicitationTitle: z.string().optional(),
     responseBy: z.string().optional(),
   })
 );

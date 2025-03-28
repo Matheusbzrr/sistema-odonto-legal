@@ -29,12 +29,11 @@ const UserSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     status: {
       type: String,
-      default: "PENDENTE",
+      default: "APROVADO",
       enum: ["PENDENTE", "APROVADO", "NEGADO"],
     },
     solicitationTitle: {
-      type: String,
-      default: "Solicito a criação de um usuário",
+      type: String
     },
     responseBy: { type: String, required: false },
   },

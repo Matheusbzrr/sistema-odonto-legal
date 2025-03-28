@@ -4,9 +4,12 @@ const validateToken = require("../middlewares/validateToken");
 const router = Router();
 
 // rotas comuns á todos usuarios
-router.post("/register", userController.createUser);
 router.post("/login", userController.loginUser);
-router.put("/alter/pass", userController.updatePassword);
+router.put("/alter/password", userController.updatePassword);
+//
+
+// admin cadastra um novo usuario
+router.post("/register", validateToken(["ADMIN"]), userController.createUser);
 
 // busca perfil do usuario
 router.get(
@@ -15,7 +18,7 @@ router.get(
   userController.getProfileUser
 );
 
-// filtro para buscar usuarios aprovados na aplicação
+// filtro para buscar usuarios por status na aplicação
 router.get(
   "/users/filter/:page",
   validateToken(["ADMIN"]),
@@ -27,6 +30,13 @@ router.put(
   "/user/status/:id",
   validateToken(["ADMIN"]),
   userController.updateStatusUserById
+);
+
+// atualizar senha de usuario por um admin
+router.put(
+  "/alter/admin",
+  validateToken(["ADMIN"]),
+  userController.updatePasswordByAdmin
 );
 
 // edita perfil do usuario
