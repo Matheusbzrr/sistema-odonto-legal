@@ -25,6 +25,13 @@ router.get(
   userController.filterGetUsersStatus
 );
 
+// att senha do usuario por ele mesmo dentro do sistema
+router.patch(
+  "/user/newpassword",
+  validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
+  userController.updatePasswordInSystem
+);
+
 // att status
 router.put(
   "/user/status/:id",

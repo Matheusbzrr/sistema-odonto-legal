@@ -23,9 +23,9 @@ const registerUser = async (data) => {
   return { msg: "Usuário criado com sucesso!" };
 };
 
-const loginUser = async (email, password, role) => {
+const loginUser = async (cpf, password, role) => {
   // busca o usuario no banco de dados pelo email pq libera a senha
-  const user = await userRepository.getUserByEmail(email);
+  const user = await userRepository.getUserByCpf(cpf);
   if (!user) {
     throw { status: 404, message: "Usuário não encontrado!" };
   }
@@ -137,7 +137,7 @@ const updatePasswordUser = async (email, newPassword) => {
     };
   }
 
-  if (user.status === "NEGADO"){
+  if (user.status === "NEGADO") {
     throw {
       status: 403,
       message:
@@ -169,11 +169,18 @@ const updatePasswordUser = async (email, newPassword) => {
   };
 };
 
-// admin altera senha do usuario 
-const  updatePasswordByAdmin = async (adminId, email, password) => {
-  const userAdmin = await userRepository.getUserById(adminId);
-  const responseBy = userAdmin.name
+const updatePasswordInSystem = async (userId, newPassword) => {
+  const salt = await bcrypt.genSalt(12);
+  const passwordHash = await bcrypt.hash(newPassword, salt);
 
+  await userRepository.updatePasswordInSystem(userId, passwordHash);
+  return { message: "Senha do usuário alterada com sucesso!" };
+};
+
+// admin altera senha do usuario
+const updatePasswordByAdmin = async (adminId, email, password) => {
+  const userAdmin = await userRepository.getUserById(adminId);
+  const responseBy = userAdmin.name;
 
   const userToBeEditaded = await userRepository.getUserByEmail(email);
 
@@ -184,11 +191,12 @@ const  updatePasswordByAdmin = async (adminId, email, password) => {
   if (userToBeEditaded.status === "APROVADO") {
     throw {
       status: 403,
-      message: "Não é possível alterar a senha de um de maneira não solicitada.",
+      message:
+        "Não é possível alterar a senha de um de maneira não solicitada.",
     };
   }
 
-  if (userToBeEditaded.status === "PENDENTE"){
+  if (userToBeEditaded.status === "PENDENTE") {
     throw {
       status: 403,
       message: "Há uma solicitção pendente. Por favor, responda.",
@@ -198,18 +206,14 @@ const  updatePasswordByAdmin = async (adminId, email, password) => {
   const salt = await bcrypt.genSalt(12);
   const passwordHash = await bcrypt.hash(password, salt);
 
-  
   await userRepository.updatePasswordByAdmin(
     userToBeEditaded._id,
     passwordHash,
     responseBy
-  )
+  );
 
   return { message: "Senha do usuário alterada com sucesso!" };
-
-
-
-}
+};
 
 const updateProfile = async (id, data) => {
   const user = await userRepository.getUserById(id);
@@ -259,6 +263,7 @@ module.exports = {
   filterGetUsersStatus,
   updateStatusUser,
   updatePasswordUser,
+  updatePasswordInSystem,
   updatePasswordByAdmin,
   updateProfile,
   updateAddress,

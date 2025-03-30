@@ -1,6 +1,7 @@
 const userService = require("../services/userService");
 const userDTO = require("../dtos/userDTO");
-const { z } = require("zod");
+const { z, string } = require("zod");
+const { request } = require("express");
 
 // criar usuario
 const createUser = async (req, res) => {
@@ -40,9 +41,9 @@ const createUser = async (req, res) => {
 // realizar login(avaliar dps a separação a nivel de arquivos/pastas)
 const loginUser = async (req, res) => {
   // valida se os dados da requisição estão presentes
-  if (!req.body.email || !req.body.password || !req.body.role) {
+  if (!req.body.cpf || !req.body.password || !req.body.role) {
     return res.status(422).json({
-      message: "Email e senha e a sua identificação são obrigatórios!",
+      message: "CPF e senha e a sua identificação são obrigatórios!",
     });
   }
 
@@ -52,7 +53,7 @@ const loginUser = async (req, res) => {
 
     // chama o serviço para efetuar o login com os dados validados e recebe um resultado do servico com uma mensagem e o token
     const result = await userService.loginUser(
-      validatedData.email,
+      validatedData.cpf,
       validatedData.password,
       validatedData.role
     );
@@ -227,6 +228,45 @@ const updatePassword = async (req, res) => {
   }
 };
 
+//altera senha do usuario ja logado no sistema sem nenhum dano ao acesso do mesmo no sistema
+const updatePasswordInSystem = async (req, res) => {
+  if (!req.userId) {
+    return res.status(401).json({ message: "Token inválido" });
+  }
+
+  if (!req.body.password) {
+    return res.status(422).json({ message: "Senha é obrigatória!" });
+  }
+
+  try {
+    const password = req.body.password;
+
+    if (password.length < 6 || typeof password !== "string") {
+      return res.status(401).json({
+        message:
+          "Senha invalida. escolha 6 digitos ou mais com letras e caracteres inclusos",
+      });
+    }
+
+    const result = await userService.updatePasswordInSystem(
+      req.userId,
+      password
+    );
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors, // exibe os erros de validação
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 // admin altera senha do usuario
 const updatePasswordByAdmin = async (req, res) => {
   if (!req.body.email || !req.body.password) {
@@ -336,6 +376,7 @@ module.exports = {
   filterGetUsersStatus,
   updateStatusUserById,
   updatePassword,
+  updatePasswordInSystem,
   updatePasswordByAdmin,
   updateProfile,
   updateAddress,

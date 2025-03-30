@@ -34,7 +34,7 @@ const userCreateDTO = z.object({
 
 // valida os dados para o login
 const userLoginDTO = z.object({
-  email: z.string().email("E-mail inválido."),
+  cpf: z.string().length(11, "O CPF deve ter exatamente 11 dígitos."),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
   role: z.enum(["ADMIN", "PERITO", "ASSISTENTE"]),
 });

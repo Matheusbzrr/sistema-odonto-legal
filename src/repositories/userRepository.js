@@ -6,9 +6,12 @@ const create = async (data) => {
   return await user.save();
 };
 
+const getAllUsers = async (data) => {
+  const users = await User.find(data).select("-password");
+};
+
 const getUserByCpf = async (cpf) => {
-  const user = await User.findOne({ cpf });
-  return user;
+  return await User.findOne({ cpf });
 };
 
 const getUserById = async (data) => {
@@ -57,14 +60,17 @@ const updatePassword = async (
   return updatePasswordUser;
 };
 
+const updatePasswordInSystem = async (id, newPassword) => {
+  return await User.findByIdAndUpdate(id, { password: newPassword });
+};
+
 const updatePasswordByAdmin = async (_id, passwordHash, responseBy) => {
-  await User.findByIdAndUpdate(_id, {
+  return await User.findByIdAndUpdate(_id, {
     password: passwordHash,
     status: "APROVADO",
+    solicitationTitle: `Última solicitação: usuário teve recuperação de senha negada, então admin ${responseBy} alterou direto no sistema.`,
     responseBy: responseBy,
   });
-
-  return;
 };
 
 const updateProfile = async (id, newData) => {
@@ -94,6 +100,7 @@ module.exports = {
   getUsersStatus,
   updateStatus,
   updatePassword,
+  updatePasswordInSystem,
   updatePasswordByAdmin,
   updateProfile,
   updateUserAddress,
