@@ -17,7 +17,7 @@ app.use(express.json());
 
 // rotas da API
 app.use("/api", userRoutes);
-app.use("/api", caseRoutes);
+app.use("/api/cases", caseRoutes);
 
 app.get("/home", (req, res) => {
   res.status(200).json({ msg: "Bem-vindo à API!" });

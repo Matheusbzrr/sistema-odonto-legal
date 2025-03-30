@@ -12,17 +12,24 @@ const caseSchema = new mongoose.Schema({
     title: { type: String, required: true },
     status: {
         type: String,
-        enum: ["PENDENTE", "FINALIZADO"],
-        default: "PENDENTE",
+        enum: ["EM ABERTO", "FINALIZADO"],
+        default: "EM ABERTO",
         required: true
     },
     openedAt: { type: Date, default: Date.now},
     closedAt: { type: Date},
     inquiryNumber: { type: String, required: true, unique: true },
-    role: {type: String, required: true},
     caseType: {type: String},
     observations: {type: String},
     location: LocationSchema,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    }  // adicionando referência ao modelo User para relacionar com a pessoa que criou o caso  
+
+    // avaliar colocar os ids de evidencias
+
 },
  {timestamps: true}
 );
