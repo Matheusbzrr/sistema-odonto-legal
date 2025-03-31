@@ -18,6 +18,10 @@ router.get(
   userController.getProfileUser
 );
 
+router.get("/search/all", validateToken(["ADMIN"]), userController.getAllUsers);
+
+router.get("/oneuser", validateToken(["ADMIN"]), userController.getUser);
+
 // filtro para buscar usuarios por status na aplicação
 router.get(
   "/users/filter/:page",
@@ -48,16 +52,9 @@ router.put(
 
 // edita perfil do usuario
 router.put(
-  "/user/profile",
+  "/user/profile/:id",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   userController.updateProfile
-);
-
-// edita endereço usuario
-router.put(
-  "/user/address",
-  validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
-  userController.updateAddress
 );
 
 //admin exclui usuario

@@ -69,6 +69,20 @@ const loginUser = async (cpf, password, role) => {
   return { message: "Autenticado com sucesso!", token };
 };
 
+const getAllUsers = async (page) => {
+  const limit = 10; 
+  const offSet = page * limit; 
+
+  const users = await userRepository.getAllUsers(offSet, limit);
+
+  if (users.length === 0) {
+    throw { status: 404, message: "Nenhum usuário encontrado!" };
+  }
+
+  // retorna os resultados para o controller
+  return users;
+}
+
 // buscar um perfil do usuario
 const getUserById = async (id) => {
   const user = await userRepository.getUserById(id);
@@ -78,9 +92,17 @@ const getUserById = async (id) => {
   return user;
 };
 
+const getUserByCPF = async (cpf) => {
+  const user = await userRepository.getUserByCpf(cpf);
+  if (!user) {
+    throw { status: 404, message: "Usuário não encontrado!" };
+  }
+  return user;
+}
+
 // filtro de admin pra procurar os aprovados
 const filterGetUsersStatus = async (page, data) => {
-  const limit = 3; // Limite de itens (nesse caso users) por página, pode alterar pra testar
+  const limit = 10; // Limite de itens (nesse caso users) por página, pode alterar pra testar
   const offSet = page * limit; // Calcula o ponto de partida baseado na página solicitada, ou seja, se eu passar 1 ele vai multiplicar o  1 da pagina * o limite que é 10 e mostar a partir do 0 até o 9 (os 10 primeiros) ignorando os anteriores, se eu passar page 2 ele vai calcular a partir do 10 até o 19 ignorando os anteriores e assim sucessivamente
 
   const status = data;
@@ -178,11 +200,11 @@ const updatePasswordInSystem = async (userId, newPassword) => {
 };
 
 // admin altera senha do usuario
-const updatePasswordByAdmin = async (adminId, email, password) => {
+const updatePasswordByAdmin = async (adminId, cpf, password) => {
   const userAdmin = await userRepository.getUserById(adminId);
   const responseBy = userAdmin.name;
 
-  const userToBeEditaded = await userRepository.getUserByEmail(email);
+  const userToBeEditaded = await userRepository.getUserByCpf(cpf);
 
   if (!userToBeEditaded) {
     throw { status: 404, message: "Usuário não encontrado!" };
@@ -215,22 +237,13 @@ const updatePasswordByAdmin = async (adminId, email, password) => {
   return { message: "Senha do usuário alterada com sucesso!" };
 };
 
-const updateProfile = async (id, data) => {
-  const user = await userRepository.getUserById(id);
+const updateProfile = async (user, data) => {
+  const userEdit = await userRepository.getUserById(user);
   if (!user) {
     throw { status: 404, message: "Usuário não encontrado!" };
   }
-
-  // verifica se o email novo é diferente do antigo para pode atualizar, se for igual o antigo a requisição acontece mas nao muda nada, se for diferente ele busca algum usuario com o email que será passado, se encontrar, devolve um erro, senao atualiza o campo.
-  if (data.email && data.email !== user.email) {
-    const validateEmail = await userRepository.getUserByEmail(data.email);
-    if (validateEmail) {
-      throw { status: 409, message: "E-mail já cadastrado!" };
-    }
-  }
-
   // atualiza os dados do usuario no banco
-  await userRepository.updateProfile(id, data);
+  await userRepository.updateProfile(userEdit._id, data);
 };
 
 const updateAddress = async (id, data) => {
@@ -259,6 +272,8 @@ const deleteUser = async (cpf) => {
 module.exports = {
   registerUser,
   loginUser,
+  getAllUsers,
+  getUserByCPF,
   getUserById,
   filterGetUsersStatus,
   updateStatusUser,

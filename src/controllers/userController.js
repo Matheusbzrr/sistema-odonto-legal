@@ -1,7 +1,6 @@
 const userService = require("../services/userService");
 const userDTO = require("../dtos/userDTO");
-const { z, string } = require("zod");
-const { request } = require("express");
+const { z } = require("zod");
 
 // criar usuario
 const createUser = async (req, res) => {
@@ -79,6 +78,29 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  if (req.params.page < 1) {
+    return res.status(422).json({ message: "Página inválida!" });
+  }
+
+  try {
+    const users = await userService.getAllUsers(req.params.page);
+    const resUsersDTO = userDTO.listUsersResponseWithAddressDTO.parse(users);
+    return res.status(200).json(resUsersDTO);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors, // exibe os erros de validação
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 // chama o perfil do usuario logado
 const getProfileUser = async (req, res) => {
   console.log(req.userId);
@@ -92,6 +114,38 @@ const getProfileUser = async (req, res) => {
     const user = await userService.getUserById(req.userId);
     // transforma os dados do usuário em um formato de resposta
     const resUserDTO = userDTO.userResponseWithAddressDTO.parse(user);
+    return res.status(200).json(resUserDTO);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors, // exibe os erros de validação
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getUser = async (req, res) => {
+  if (!req.body) {
+    return res.status(422).json({ message: "Informe um cpf para pesquisar!" });
+  }
+  try {
+    const userReq = req.body.cpf;
+    // valida se o cpf está presente na requisição
+    if (typeof userReq !== "string" || userReq.length != 11) {
+      return res
+        .status(422)
+        .json({ message: "Passe apenas os digitos do cpf." });
+    }
+
+    // chama o serviço para buscar um usuário pelo CPF
+    const userRes = await userService.getUserByCPF(userReq);
+    // transforma os dados do usuário em um formato de resposta
+    const resUserDTO = userDTO.userResponseWithAddressDTO.parse(userRes);
     return res.status(200).json(resUserDTO);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -269,7 +323,7 @@ const updatePasswordInSystem = async (req, res) => {
 
 // admin altera senha do usuario
 const updatePasswordByAdmin = async (req, res) => {
-  if (!req.body.email || !req.body.password) {
+  if (!req.body.cpf || !req.body.password) {
     return res.status(401).json({ message: "dados invalidos" });
   }
 
@@ -280,7 +334,7 @@ const updatePasswordByAdmin = async (req, res) => {
     const validatedData = userDTO.updatePasswordDTO.parse(data);
     const result = await userService.updatePasswordByAdmin(
       adminId,
-      validatedData.email,
+      validatedData.cpf,
       validatedData.password
     );
     return res.status(201).json(result);
@@ -301,42 +355,18 @@ const updatePasswordByAdmin = async (req, res) => {
 // usuario altera alguns dados do seu perfil
 const updateProfile = async (req, res) => {
   const data = req.body;
-  const userId = req.userId;
-  if (!data || !userId) {
+  const userToBeEditaded = req.params.id
+  
+  if (!data) {
     return res.status(422).json({ message: "Dados obrigatórios inválidos!" });
+  }
+  if (!userToBeEditaded) {
+    return res.status(401).json({ message: "Informe um usuário" });
   }
   try {
     const validatedData = userDTO.updateProfileDTO.parse(data);
-    await userService.updateProfile(userId, validatedData);
+    await userService.updateProfile(userToBeEditaded, validatedData);
     return res.status(201).json("Perfil alterado com sucesso!");
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        message: "Erro de validação dos dados",
-        errors: error.errors, // exibe os erros de validação
-      });
-    }
-    if (error.status) {
-      return res.status(error.status).json({ message: error.message });
-    }
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-// usuario altera dados de endereço
-const updateAddress = async (req, res) => {
-  const user = req.userId;
-  const address = req.body;
-  if (!user) {
-    return res.status(422).json({ message: "Token inválido" });
-  }
-  if (!address) {
-    return res.status(422).json({ message: "Endereço é obrigatório!" });
-  }
-  try {
-    const validatedData = userDTO.addressCreateDTO.parse(address);
-    result = await userService.updateAddress(user, validatedData);
-    return res.status(201).json("Endereço alterado com sucesso!");
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
@@ -372,6 +402,8 @@ const deleteUser = async (req, res) => {
 module.exports = {
   createUser,
   loginUser,
+  getAllUsers,
+  getUser,
   getProfileUser,
   filterGetUsersStatus,
   updateStatusUserById,
@@ -379,6 +411,5 @@ module.exports = {
   updatePasswordInSystem,
   updatePasswordByAdmin,
   updateProfile,
-  updateAddress,
   deleteUser,
 };

@@ -6,8 +6,11 @@ const create = async (data) => {
   return await user.save();
 };
 
-const getAllUsers = async (data) => {
-  const users = await User.find(data).select("-password");
+const getAllUsers = async (offSet, limit) => {
+  return await User.find({ status: "APROVADO" })
+    .skip(offSet)
+    .limit(limit)
+    .select("-password");
 };
 
 const getUserByCpf = async (cpf) => {
@@ -94,6 +97,7 @@ const deleteUser = async (id) => {
 
 module.exports = {
   create,
+  getAllUsers,
   getUserByCpf,
   getUserById,
   getUserByEmail,
