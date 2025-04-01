@@ -231,7 +231,7 @@ const updateStatusUserById = async (req, res) => {
       validatedData.responseBy
     );
 
-    return res.status(201).json();
+    return res.status(204).json();
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
@@ -248,10 +248,10 @@ const updateStatusUserById = async (req, res) => {
 
 // usuario altera sua senha (rota pulica)
 const updatePassword = async (req, res) => {
-  const { email, password } = req.body;
+  const { cpf, password } = req.body;
 
-  if (!email) {
-    return res.status(422).json({ message: "Email é obrigatório!" });
+  if (!cpf) {
+    return res.status(422).json({ message: "CPF é obrigatório!" });
   }
 
   if (!password) {
@@ -259,11 +259,11 @@ const updatePassword = async (req, res) => {
   }
 
   try {
-    // valida email e senha
-    const validatedData = userDTO.updatePasswordDTO.parse({ email, password });
-    // envia email e senha validado
+    // valida cpf e senha
+    const validatedData = userDTO.updatePasswordDTO.parse({ cpf, password });
+    // envia cpf e senha validado
     const result = await userService.updatePasswordUser(
-      validatedData.email,
+      validatedData.cpf,
       validatedData.password
     );
     // recebe a resposta

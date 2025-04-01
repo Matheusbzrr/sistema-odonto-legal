@@ -143,9 +143,9 @@ const updateStatusUser = async (id, status, responseBy) => {
 };
 
 // atualiza senha de usuario e solicita um acesso
-const updatePasswordUser = async (email, newPassword) => {
-  // Busca usuário pelo email
-  const user = await userRepository.getUserByEmail(email);
+const updatePasswordUser = async (cpf, newPassword) => {
+  // Busca usuário pelo cpf
+  const user = await userRepository.getUserByCpf(cpf);
 
   if (!user) {
     throw { status: 404, message: "Usuário não encontrado!" };
