@@ -29,10 +29,13 @@ const UserSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     status: {
       type: String,
-      default: "PENDENTE",
+      default: "APROVADO",
       enum: ["PENDENTE", "APROVADO", "NEGADO"],
     },
-    approvedBy: { type: String, required: false },
+    solicitationTitle: {
+      type: String
+    },
+    responseBy: { type: String, required: false },
   },
   { timestamps: true }
 );

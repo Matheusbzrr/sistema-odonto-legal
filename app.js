@@ -7,7 +7,7 @@ const userRoutes = require("./src/routes/userRoute");
 const caseRoutes = require("./src/routes/caseRoute");
 
 const corsOptions = {
-  origin: "http://127.0.0.1:5501",
+  origin: "*",
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: "Content-Type, Authorization",
 };

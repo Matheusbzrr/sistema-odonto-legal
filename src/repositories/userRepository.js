@@ -6,6 +6,17 @@ const create = async (data) => {
   return await user.save();
 };
 
+const getAllUsers = async (offSet, limit) => {
+  return await User.find({ status: "APROVADO" })
+    .skip(offSet)
+    .limit(limit)
+    .select("-password");
+};
+
+const getUserByCpf = async (cpf) => {
+  return await User.findOne({ cpf });
+};
+
 const getUserById = async (data) => {
   return await User.findById(data);
 };
@@ -15,51 +26,87 @@ const getUserByEmail = async (email) => {
   return await User.findOne({ email });
 };
 
-// busca todos usuarios com status aprovado
-const getUsersApproved = async (offSet, limit) => {
-  return await User.find()
-    .where("status")
-    .equals("APROVADO")
+// busca todos usuarios a partir do status passado
+const getUsersStatus = async (offSet, limit, data) => {
+  return await User.find({ status: data })
     .skip(offSet)
     .limit(limit)
     .select("-password");
 };
 
-// busca todos usuarios com status pendente
-const getUsersPending = async (offSet, limit) => {
-  return await User.find()
-    .where("status")
-    .equals("PENDENTE")
-    .skip(offSet)
-    .limit(limit)
-    .select("-password");
-};
-
-// busca todos usuarios com status negado
-const getUsersInvalid = async (offSet, limit) => {
-  return await User.find()
-    .where("status")
-    .equals("NEGADO")
-    .skip(offSet)
-    .limit(limit)
-    .select("-password");
-};
-
-const updateSatus = async (id, newStatus, identification) => {
+const updateStatus = async (id, newStatus, identification) => {
   const updateStatusUser = await User.findByIdAndUpdate(
     id,
-    { status: newStatus, approvedBy: identification },
+    { status: newStatus, responseBy: identification },
     { new: true }
   );
   return updateStatusUser;
 };
 
+const updatePassword = async (
+  id,
+  newPassword,
+  newSolicitation,
+  newStatus,
+  newResponseBy
+) => {
+  const updatePasswordUser = await User.findByIdAndUpdate(
+    id,
+    {
+      password: newPassword,
+      solicitationTitle: newSolicitation,
+      status: newStatus,
+      responseBy: newResponseBy,
+    },
+    { new: true }
+  );
+  return updatePasswordUser;
+};
+
+const updatePasswordInSystem = async (id, newPassword) => {
+  return await User.findByIdAndUpdate(id, { password: newPassword });
+};
+
+const updatePasswordByAdmin = async (_id, passwordHash, responseBy) => {
+  return await User.findByIdAndUpdate(_id, {
+    password: passwordHash,
+    status: "APROVADO",
+    solicitationTitle: `Última solicitação: usuário teve recuperação de senha negada, então admin ${responseBy} alterou direto no sistema.`,
+    responseBy: responseBy,
+  });
+};
+
+const updateProfile = async (id, newData) => {
+  const updateProfileUser = await User.findByIdAndUpdate(id, newData, {
+    new: true,
+  });
+  return updateProfileUser;
+};
+
+const updateUserAddress = async (userId, newAddress) => {
+  return await User.findByIdAndUpdate(
+    userId,
+    { $set: { address: newAddress } },
+    { new: true }
+  );
+};
+
+const deleteUser = async (id) => {
+  await User.findByIdAndDelete(id);
+};
+
 module.exports = {
   create,
+  getAllUsers,
+  getUserByCpf,
   getUserById,
   getUserByEmail,
-  getUsersApproved,
-  getUsersPending,
-  getUsersInvalid,
-  updateSatus,
+  getUsersStatus,
+  updateStatus,
+  updatePassword,
+  updatePasswordInSystem,
+  updatePasswordByAdmin,
+  updateProfile,
+  updateUserAddress,
+  deleteUser,
 };
