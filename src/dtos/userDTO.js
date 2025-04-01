@@ -7,7 +7,7 @@ const validEnumDTO = z.object({
 // valida dados do endereço
 const addressCreateDTO = z.object({
   street: z.string(),
-  numberHouse: z.number(),
+  houseNumber: z.number(),
   district: z.string(),
   city: z.string(),
   state: z.string(),
@@ -31,7 +31,7 @@ const userCreateDTO = z.object({
     ),
   address: z.object({
     street: z.string(),
-    numberHouse: z.number(), //houseNumber
+    houseNumber: z.number(), 
     district: z.string(),
     city: z.string(),
     state: z.string(),
@@ -59,7 +59,7 @@ const userResponseWithAddressDTO = z.object({
   dateOfBirth: z.string(),
   address: z.object({
     street: z.string(),
-    numberHouse: z.number(), //houseNumber
+    houseNumber: z.number(), 
     district: z.string(),
     city: z.string(),
     state: z.string(),

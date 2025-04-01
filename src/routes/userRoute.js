@@ -53,7 +53,7 @@ router.put(
 // edita perfil do usuario
 router.put(
   "/user/profile/:id",
-  validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
+  validateToken(["ADMIN"]),
   userController.updateProfile
 );
 
