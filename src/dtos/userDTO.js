@@ -29,7 +29,15 @@ const userCreateDTO = z.object({
       /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/,
       "A data de nascimento deve estar no formato DD/MM/YYYY."
     ),
-  address: addressCreateDTO,
+  address: z.object({
+    street: z.string(),
+    numberHouse: z.number(), //houseNumber
+    district: z.string(),
+    city: z.string(),
+    state: z.string(),
+    zipCode: z.string().min(8, "O CEP deve ter pelo menos 8 caracteres."),
+    complement: z.string().optional(),
+  }),
 });
 
 // valida os dados para o login
@@ -51,7 +59,7 @@ const userResponseWithAddressDTO = z.object({
   dateOfBirth: z.string(),
   address: z.object({
     street: z.string(),
-    numberHouse: z.number(),
+    numberHouse: z.number(), //houseNumber
     district: z.string(),
     city: z.string(),
     state: z.string(),

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 // equema para endereço
 const AddressSchema = new mongoose.Schema({
   street: { type: String, required: true },
-  numberHouse: { type: Number, required: true },
+  numberHouse: { type: Number, required: true }, //houseNumber
   district: { type: String, required: true },
   city: { type: String, required: true },
   state: { type: String, required: true },
