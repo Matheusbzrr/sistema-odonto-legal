@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 // equema para endereço
 const AddressSchema = new mongoose.Schema({
   street: { type: String, required: true },
-  numberHouse: { type: Number, required: true }, //houseNumber
+  houseNumber: { type: Number, required: true }, //houseNumber
   district: { type: String, required: true },
   city: { type: String, required: true },
   state: { type: String, required: true },
@@ -29,13 +29,10 @@ const UserSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true },
     status: {
       type: String,
-      default: "APROVADO",
+      default: "PENDENTE",
       enum: ["PENDENTE", "APROVADO", "NEGADO"],
     },
-    solicitationTitle: {
-      type: String
-    },
-    responseBy: { type: String, required: false },
+    approvedBy: { type: String, required: false },
   },
   { timestamps: true }
 );
