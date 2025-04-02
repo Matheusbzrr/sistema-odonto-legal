@@ -5,6 +5,7 @@ const app = express();
 // rotas
 const userRoutes = require("./src/routes/userRoute");
 const caseRoutes = require("./src/routes/caseRoute");
+const evidenceRoutes = require("./src/routes/evidenceRoute")
 
 const corsOptions = {
   origin: "*",
@@ -18,6 +19,7 @@ app.use(express.json());
 // rotas da API
 app.use("/api", userRoutes);
 app.use("/api/cases", caseRoutes);
+app.use("/api/evidence",evidenceRoutes )
 
 app.get("/home", (req, res) => {
   res.status(200).json({ msg: "Bem-vindo à API!" });

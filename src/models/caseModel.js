@@ -1,47 +1,122 @@
-const mongoose = require ("mongoose");
+const mongoose = require("mongoose");
 
-//esquema para localização com latitude e longitude 
+//esquema para localização com latitude e longitude
 const LocationSchema = new mongoose.Schema({
-    // endereço
+  street: { type: String },
+  houseNumber: { type: Number },
+  district: { type: String },
+  city: { type: String },
+  state: { type: String },
+  zipCode: { type: String },
+  complement: { type: String },
 });
 
-// esquema para o caso 
-const caseSchema = new mongoose.Schema({
-    nic: { type: String, required: true, unique: true }, 
+// esquema para o caso
+const caseSchema = new mongoose.Schema(
+  {
+    nic: { type: String, required: true, unique: true },
     title: { type: String, required: true },
     status: {
-        type: String,
-        enum: ["EM ABERTO", "FINALIZADO"],
-        default: "EM ABERTO",
-        required: true
+      type: String,
+      enum: ["EM ABERTO", "FINALIZADO", "ARQUIVADO"],
+      default: "EM ABERTO",
+      required: true,
     },
-    openedAt: { type: Date, default: Date.now},
-    closedAt: { type: Date},
-    inquiryNumber: { type: String, unique: true },
-    BO: {type: String, unique: true},
-    caseType: {type: String},
-    observations: {type: String},
+    openedAt: { type: Date, default: Date.now },
+    closedAt: { type: Date },
+    inquiryNumber: { type: String },
+    BO: { type: String },
+    caseType: { type: String },
+    observations: { type: String },
     location: LocationSchema,
-    quemAbriuOCaso: {
+    openedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    involved: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-        required: true
-    },
-    envolvidos: [{
+      },
+    ],
+    evidence: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"  // adicionando referência ao modelo User para relacionar com a pessoa envolvida no caso
-    }],
-    evidence: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Evidence"  // adicionando referência ao modelo Evidence para relacionar com a evidencia do caso
-    }]  // adicionando referência ao modelo User para relacionar com a pessoa que criou o caso  
-
-    // avaliar colocar os ids de evidencias como lista
-
-},
- {timestamps: true}
+        ref: "Evidence",
+      },
+    ],
+    history: [
+      {
+        field: { type: String, required: true },
+        oldValue: { type: mongoose.Schema.Types.Mixed },
+        newValue: { type: mongoose.Schema.Types.Mixed },
+        changedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        changedAt: { type: Date, default: Date.now },
+      },
+    ],
+  },
+  { timestamps: true }
 );
+
+caseSchema.pre("findOneAndUpdate", async function (next) {
+  const update = this.getUpdate();
+  const caseDoc = await this.model.findOne(this.getQuery());
+
+  if (!caseDoc) return next();
+
+  const fieldsToTrack = [
+    "title",
+    "status",
+    "inquiryNumber",
+    "BO",
+    "observations",
+    "location",
+    "involved",
+    "evidence",
+  ];
+
+  const changes = [];
+
+  fieldsToTrack.forEach((field) => {
+    // Pegamos o valor atualizado, seja direto ou dentro de $set
+    const newValue =
+      update[field] !== undefined ? update[field] : update.$set?.[field];
+
+    if (newValue !== undefined) {
+      const oldValue = caseDoc[field];
+
+      // Para objetos e arrays, fazemos uma comparação JSON para detectar mudanças corretamente
+      const isDifferent =
+        typeof newValue === "object"
+          ? JSON.stringify(newValue) !== JSON.stringify(oldValue)
+          : String(newValue) !== String(oldValue);
+
+      if (isDifferent) {
+        changes.push({
+          field,
+          oldValue,
+          newValue,
+          changedBy: update.userId,
+          changedAt: new Date(),
+        });
+      }
+    }
+  });
+
+  if (changes.length > 0) {
+    await this.model.updateOne(this.getQuery(), {
+      $push: { history: { $each: changes } },
+    });
+  }
+
+  next();
+});
 
 // filtros data, status, responsavel
 
-module.exports = mongoose.model("Case", caseSchema)
+module.exports = mongoose.model("Case", caseSchema);

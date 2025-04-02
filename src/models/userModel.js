@@ -32,7 +32,8 @@ const UserSchema = new mongoose.Schema(
       default: "APROVADO",
       enum: ["PENDENTE", "APROVADO", "NEGADO"],
     },
-    approvedBy: { type: String, required: false },
+    responseBy: { type: String },
+    solicitationTitle: { type: String },
   },
   { timestamps: true }
 );

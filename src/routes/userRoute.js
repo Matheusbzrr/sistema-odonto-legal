@@ -18,7 +18,7 @@ router.get(
   userController.getProfileUser
 );
 
-router.get("/search/all", validateToken(["ADMIN"]), userController.getAllUsers);
+router.get("/search/all", validateToken(["ADMIN", "PERITO"]), userController.getAllUsers);
 
 router.get("/oneuser", validateToken(["ADMIN"]), userController.getUser);
 

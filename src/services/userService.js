@@ -69,7 +69,7 @@ const loginUser = async (cpf, password, role) => {
   return { message: "Autenticado com sucesso!", token };
 };
 
-const getAllUsers = async (page) => {
+const getAll = async (page) => {
   const limit = 10; 
   const offSet = page * limit; 
 
@@ -272,7 +272,7 @@ const deleteUser = async (cpf) => {
 module.exports = {
   registerUser,
   loginUser,
-  getAllUsers,
+  getAll,
   getUserByCPF,
   getUserById,
   filterGetUsersStatus,

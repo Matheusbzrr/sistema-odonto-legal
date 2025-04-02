@@ -84,7 +84,13 @@ const getAllUsers = async (req, res) => {
   }
 
   try {
-    const users = await userService.getAllUsers(req.params.page);
+    if(req.userRole === 'PERITO') {
+      const users = await userService.getAll(req.params.page);
+      const resPeritoDTO = userDTO.peritoResponseListUsersDTO.parse(users);
+      return res.status(200).json(resPeritoDTO);
+    }
+
+    const users = await userService.getAll(req.params.page);
     const resUsersDTO = userDTO.listUsersResponseWithAddressDTO.parse(users);
     return res.status(200).json(resUsersDTO);
   } catch (error) {

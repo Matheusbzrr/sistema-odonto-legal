@@ -38,14 +38,14 @@ const userCreateDTO = z.object({
     zipCode: z.string().min(8, "O CEP deve ter pelo menos 8 caracteres."),
     complement: z.string().optional(),
   }),
-});
+}).strict();
 
 // valida os dados para o login
 const userLoginDTO = z.object({
   cpf: z.string().length(11, "O CPF deve ter exatamente 11 dígitos."),
   password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
   role: z.enum(["ADMIN", "PERITO", "ASSISTENTE"]),
-});
+}).strict();
 
 // trata os dados para resposta com endereço
 const userResponseWithAddressDTO = z.object({
@@ -69,6 +69,14 @@ const userResponseWithAddressDTO = z.object({
 });
 
 const listUsersResponseWithAddressDTO = z.array(userResponseWithAddressDTO);
+const peritoResponseListUsersDTO = z.array(
+  z.object({
+    id: z.string(),
+    name: z.string(),
+    lastName: z.string(),
+    role: z.string(),
+  })
+)
 
 // trata os dados para resposta de filtros
 const userResponseFiltersDTO = z.array(
@@ -103,7 +111,7 @@ const responseUpdateStatusDTO = z.object({
   cpf: z.string(),
   status: z.string(),
   responseBy: z.string().optional(),
-});
+}).strict();
 
 const updateProfileDTO = z.object({
   name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
@@ -118,7 +126,7 @@ const updateProfileDTO = z.object({
       "A data de nascimento deve estar no formato DD/MM/YYYY."
     ),
   address: addressCreateDTO,
-});
+}).strict();
 
 module.exports = {
   validEnumDTO,
@@ -132,4 +140,5 @@ module.exports = {
   responseUpdateStatusDTO,
   updatePasswordDTO,
   updateProfileDTO,
+  peritoResponseListUsersDTO 
 };

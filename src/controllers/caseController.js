@@ -39,6 +39,72 @@ const getAllCases = async (req, res) => {
     const validated = caseDTO.caseListDTO.parse(result); // tirei o dto do service e trouxe para o controller
     return res.status(200).json(validated);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors,
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// BUSCAR CASO ONDE USER LOGADO ESTA ENVOLVIDO
+const getCasesByInUser = async (req, res) => {
+  const page = req.params.page - 1;
+  if (page < 0) {
+    return res.status(400).json({ message: "Página inválida!" });
+  }
+  try {
+    const cases = await caseService.casesByUser(page, req.userId);
+    const validatedResponse = caseDTO.caseListDTO.parse(cases);
+    return res.status(200).json(validatedResponse);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors,
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// busca casos onde usuario buscado por CPF esta envolvido
+const getCasesByCpfUser = async (req, res) => {
+  const page = req.params.page - 1;
+  if (page < 0) {
+    return res.status(400).json({ message: "Página inválida!" });
+  }
+
+  if (!req.body.cpf) {
+    return res.status(400).json({ message: "CPF do não foi passado." });
+  }
+
+  try {
+    const cpf = req.body.cpf;
+    if (typeof cpf !== "string" || cpf.length !== 11) {
+      return res
+        .status(400)
+        .json({ message: "Passe o cpf no formato correto." });
+    }
+
+    const cases = await caseService.casesByCpfUser(page, cpf);
+    const validatedResponse = caseDTO.caseListDTO.parse(cases);
+    return res.status(200).json(validatedResponse);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors,
+      });
+    }
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
@@ -64,6 +130,12 @@ const getCaseByNic = async (req, res) => {
     const validated = caseDTO.caseResponseDTO.parse(result);
     return res.status(200).json(validated);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors,
+      });
+    }
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
@@ -87,6 +159,12 @@ const getCasesByStatus = async (req, res) => {
     const validated = caseDTO.caseListDTO.parse(result);
     return res.status(200).json(validated);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors,
+      });
+    }
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
     }
@@ -110,7 +188,8 @@ const updateStatusCaseByNic = async (req, res) => {
 
   try {
     const validated = caseDTO.caseUpdateStatusDTO.parse(req.body);
-    const result = await caseService.updateCaseStatus(
+    await caseService.updateCaseStatus(
+      req.userId,
       req.params.nic,
       validated.status
     );
@@ -129,10 +208,44 @@ const updateStatusCaseByNic = async (req, res) => {
   }
 };
 
+const updateDataCase = async (req, res) => {
+  if (!req.params.nic) {
+    return res.status(404).json({ message: "Caso não encontrado" });
+  }
+
+  if (!req.body) {
+    return res.status(404).json({ message: "Dados não encontrados" });
+  }
+
+  try {
+    const validated = caseDTO.caseUpdateDataDTO.parse(req.body);
+    const result = await caseService.updateCaseData(
+      validated,
+      req.userId,
+      req.params.nic
+    );
+    res.status(204).json(result);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors,
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createCase,
-  getCaseByNic,
   getAllCases,
+  getCasesByInUser,
+  getCasesByCpfUser,
+  getCaseByNic,
   getCasesByStatus,
   updateStatusCaseByNic,
+  updateDataCase,
 };
