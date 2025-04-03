@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const dentalHistorySchema = new mongoose.Schema(
   {
+    protocolDental: { type: String},
     examType: {
       type: String,
       enum: [
@@ -18,7 +19,6 @@ const dentalHistorySchema = new mongoose.Schema(
         "ODONTOSCOPIA",
       ],
     },
-    date: { type: Date, required: true },
     description: { type: String, required: true },
     toothCharting: { type: Object },
     photo: { type: String },

@@ -1,14 +1,37 @@
 const caseRepository = require("../repositories/caseRepository");
 const notificationService = require("./notificationService");
+const patientService = require("./patientService");
+const { v4: uuidv4 } = require("uuid");
 // cria novo caso
 const createCase = async (data, userId) => {
-  // verifica se protocol já existe
-  const existingCase = await caseRepository.getCaseByProtocol(data.protocol);
-  if (existingCase) {
-    throw { status: 409, message: "Caso já cadastrado!" };
+  const patient = await patientService.getPatientByNic(data.nic);
+  console.log(patient);
+  if (!patient) {
+    throw { status: 404, message: "Paciente não encontrado!" };
   }
 
-  await caseRepository.createCase(data, userId); // passa o id do usuario parao repositorio
+  const existingCases = await caseRepository.getCasesByPatients(patient);
+  if (existingCases.length > 0) {
+    throw {
+      status: 409,
+      message: `Os seguintes pacientes já possuem um caso registrado: ${existingCases
+        .map((c) => c.patient.name)
+        .join(", ")}`,
+    };
+  }
+
+  const protocol = uuidv4();
+
+  const caseCreated = await caseRepository.createCase(
+    data,
+    userId,
+    patient._id,
+    protocol
+  ); // passa o id do usuario parao repositorio
+
+  await patientService.updatePatient(data.nic, {
+    $push: { idCase: caseCreated._id },
+  });
   return { message: "Caso criado com sucesso!" };
 };
 

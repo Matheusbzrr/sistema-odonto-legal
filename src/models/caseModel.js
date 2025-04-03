@@ -15,11 +15,13 @@ const LocationSchema = new mongoose.Schema({
 const caseSchema = new mongoose.Schema(
   {
     protocol: { type: String, required: true, unique: true },
-    patient: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Patient",
-      required: true,
-    },
+    patient: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Patient",
+        required: true,
+      },
+    ],
     title: { type: String, required: true },
     status: {
       type: String,
@@ -31,7 +33,19 @@ const caseSchema = new mongoose.Schema(
     closedAt: { type: Date },
     inquiryNumber: { type: String },
     BO: { type: String },
-    caseType: { type: String },
+    caseType: {
+      type: String,
+      enum: [
+        "ACIDENTE",
+        "IDENTIFICAÇÃO DE VÍTIMA",
+        "EXAME CRIMINAL",
+        "MORDIDA",
+        "AVALIAÇÃO DE LESÕES",
+        "FRAUDE ODONTOLÓGICA",
+        "DIREITOS HUMANOS",
+      ],
+      required: true,
+    },
     observations: { type: String },
     location: LocationSchema,
     openedBy: {

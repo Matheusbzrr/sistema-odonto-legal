@@ -1,9 +1,13 @@
 const Case = require("../models/caseModel");
 
 //cria um novo caso
-const createCase = async (data, userId) => {
-  const newCase = new Case({ ...data, openedBy: userId });
+const createCase = async (data, userId, patient, protocol) => {
+  const newCase = new Case({ ...data, openedBy: userId, patient, protocol });
   return await newCase.save();
+};
+
+const getCasesByPatients = async (patients) => {
+  return await Case.find({ patient: { $in: patients } });
 };
 
 //lista todos os casos com paginação
@@ -146,6 +150,7 @@ const updateCaseData = async (data, userId, protocol) => {
 
 module.exports = {
   createCase,
+  getCasesByPatients,
   getAllCases,
   getCasesByInUser,
   getCasesByCpfUser,

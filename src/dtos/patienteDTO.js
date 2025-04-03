@@ -14,9 +14,7 @@ const createPatientSchema = z.object({
   nic: z.string().min(1, "NIC é obrigatório."),
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres."),
   age: z.number().min(0, "Idade não pode ser negativa."),
-  cpf: z
-    .string()
-    .optional(),
+  cpf: z.string().optional(),
   address: AddressSchema.optional(),
   identificationStatus: z.enum([
     "IDENTIFICADO",
@@ -29,7 +27,7 @@ const responsePatienteDTO = z.object({
   nic: z.string(),
   name: z.string(),
   age: z.number(),
-  cpf: z.string().length(11).optional(),
+  cpf: z.string().optional(),
   address: AddressSchema.optional(),
   identificationStatus: z.enum([
     "IDENTIFICADO",
@@ -37,14 +35,18 @@ const responsePatienteDTO = z.object({
     "PARCIALMENTE IDENTIFICADO",
   ]),
   dentalHistory: z.array(z.any()).optional(),
+  idCase: z.any(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
 const patienteList = z.array(responsePatienteDTO);
 
+const updatePatientSchema = createPatientSchema.partial();
+
 module.exports = {
   createPatientSchema,
   responsePatienteDTO,
   patienteList,
+  updatePatientSchema,
 };

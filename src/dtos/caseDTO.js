@@ -14,23 +14,29 @@ const locationDTO = z
 
 const caseCreateDTO = z
   .object({
+    nic: z.string().min(1, z.string()),
     title: z.string().min(3, "O título deve ter pelo menos 3 caracteres."),
-    status: z.enum(["EM ABERTO", "FINALIZADO", "ARQUIVADO"]),
     inquiryNumber: z.string().optional(),
     BO: z.string().optional(),
-    caseType: z
-      .string()
-      .min(3, "O tipo do caso deve ter pelo menos 3 caracteres"),
+    caseType: z.enum([
+      "ACIDENTE",
+      "IDENTIFICAÇÃO DE VÍTIMA",
+      "EXAME CRIMINAL",
+      "MORDIDA",
+      "AVALIAÇÃO DE LESÕES",
+      "FRAUDE ODONTOLÓGICA",
+      "DIREITOS HUMANOS",
+    ]),
     observations: z.string().optional(),
     location: locationDTO.optional(),
     involved: z.array(z.string()).optional(), // Lista de IDs de usuários envolvidos
-    evidence: z.array(z.string()).optional(),
   })
   .strict();
 
 //DTO para resposta de caso único
 const caseResponseDTO = z.object({
   protocol: z.string(),
+  patient: z.any().optional(),
   title: z.string(),
   status: z.enum(["EM ABERTO", "FINALIZADO", "ARQUIVADO"]),
   openedAt: z.date(), // mudei para data pois no banco ta salvo como data direto
@@ -40,13 +46,20 @@ const caseResponseDTO = z.object({
     .transform((value) => (value === null ? undefined : value)),
   inquiryNumber: z.string().optional(),
   BO: z.string().optional(),
-  caseType: z.string(),
+  caseType: z.enum([
+    "ACIDENTE",
+    "IDENTIFICAÇÃO DE VÍTIMA",
+    "EXAME CRIMINAL",
+    "MORDIDA",
+    "AVALIAÇÃO DE LESÕES",
+    "FRAUDE ODONTOLÓGICA",
+    "DIREITOS HUMANOS",
+  ]),
   observations: z.string().optional(),
   location: locationDTO.optional(),
   openedBy: z.any(),
   involved: z.array(z.any()).optional(),
   evidence: z.array(z.any()).optional(),
-  
 });
 
 //DTO para resposta de lista de casos
@@ -67,6 +80,15 @@ const caseUpdateDataDTO = z
     BO: z.string().optional(),
     observations: z.string().optional(),
     location: locationDTO.optional(),
+    caseType: z.enum([
+      "ACIDENTE",
+      "IDENTIFICAÇÃO DE VÍTIMA",
+      "EXAME CRIMINAL",
+      "MORDIDA",
+      "AVALIAÇÃO DE LESÕES",
+      "FRAUDE ODONTOLÓGICA",
+      "DIREITOS HUMANOS",
+    ]),
     involved: z.array(z.string()).optional(), // Lista de IDs de usuários envolvidos
     evidence: z.array(z.string()).optional(),
   })

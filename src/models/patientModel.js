@@ -24,6 +24,7 @@ const patientSchema = new mongoose.Schema(
     dentalHistory: [
       { type: mongoose.Schema.Types.ObjectId, ref: "DentalHistory" },
     ],
+    idCase: { type: mongoose.Schema.Types.ObjectId, ref: "Case" },
   },
   { timestamps: true }
 );
