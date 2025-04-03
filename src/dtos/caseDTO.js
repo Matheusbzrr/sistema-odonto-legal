@@ -14,7 +14,6 @@ const locationDTO = z
 
 const caseCreateDTO = z
   .object({
-    nic: z.string().min(2, "O nic é obrigatório."),
     title: z.string().min(3, "O título deve ter pelo menos 3 caracteres."),
     status: z.enum(["EM ABERTO", "FINALIZADO", "ARQUIVADO"]),
     inquiryNumber: z.string().optional(),
@@ -31,7 +30,7 @@ const caseCreateDTO = z
 
 //DTO para resposta de caso único
 const caseResponseDTO = z.object({
-  nic: z.string(),
+  protocol: z.string(),
   title: z.string(),
   status: z.enum(["EM ABERTO", "FINALIZADO", "ARQUIVADO"]),
   openedAt: z.date(), // mudei para data pois no banco ta salvo como data direto
@@ -47,6 +46,7 @@ const caseResponseDTO = z.object({
   openedBy: z.any(),
   involved: z.array(z.any()).optional(),
   evidence: z.array(z.any()).optional(),
+  
 });
 
 //DTO para resposta de lista de casos

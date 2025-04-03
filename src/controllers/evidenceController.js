@@ -8,12 +8,12 @@ const createEvidence = async (req, res) => {
   }
 
   if (!req.params) {
-    return res.status(400).json({ message: "Informe o NIC do caso!" });
+    return res.status(400).json({ message: "Informe o protocolo do caso!" });
   }
 
   try {
     const validated = evidenceDTO.createEvidenceDTO.parse(req.body);
-    await evidenceService.createEvidence(req.userId, validated, req.params.nic);
+    await evidenceService.createEvidence(req.userId, validated, req.params.protocol);
     return res.status(201).json("Evidencia adicionada no caso com sucesso!");
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -34,15 +34,15 @@ const getAllEvidencesInCase = async (req, res) => {
   if (page < 0) {
     return res.status(400).json({ message: "Página inválida!" });
   }
-  const nic = req.body.nic;
-  if (!nic || typeof nic !== "string") {
+  const protocol = req.body.protocol;
+  if (!protocol || typeof protocol !== "string") {
     return res
       .status(400)
-      .json({ message: "É necessário informar corretamente NIC do caso." });
+      .json({ message: "É necessário informar corretamente protocolo do caso." });
   }
 
   try {
-    const result = await evidenceService.getAllEvidencesInCase(page, nic);
+    const result = await evidenceService.getAllEvidencesInCase(page, protocol);
     const validated = evidenceDTO.listEvidenceResponseDTO.parse(result);
     return res.status(200).json(validated);
   } catch (error) {
@@ -85,8 +85,70 @@ const getEvidenceById = async (req, res) => {
   }
 };
 
+const updateEvidence = async (req, res) => {
+  const evidenceId = req.params.evidenceId;
+  if (!evidenceId) {
+    return res
+      .status(400)
+      .json({ message: "É necessário informar ID da evidência." });
+  }
+  if (!req.body) {
+    return res.status(400).json({ message: "Verifique os dados informados!" });
+  }
+  try {
+    const validated = evidenceDTO.updateEvidenceDTO.parse(req.body);
+    await evidenceService.updateEvidence(evidenceId, validated);
+    return res.status(200).json("Evidência atualizada com sucesso!");
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors,
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const updateVerified = async (req, res) => {
+  const evidenceId = req.params.evidenceId;
+  if (!evidenceId) {
+    return res
+      .status(400)
+      .json({ message: "É necessário informar ID da evidência." });
+  }
+
+  if (!req.body) {
+    return res
+      .status(400)
+      .json({ message: "É necessário informar o novo status verificado." });
+  }
+
+  try {
+    const validated = evidenceDTO.updateEvidenceVerified.parse(req.body);
+    await evidenceService.updateVerified(evidenceId, validated, req.userId);
+    return res.status(200).json("Status verificado atualizado com sucesso!");
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors,
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createEvidence,
   getAllEvidencesInCase,
-  getEvidenceById
+  getEvidenceById,
+  updateEvidence,
+  updateVerified
 };

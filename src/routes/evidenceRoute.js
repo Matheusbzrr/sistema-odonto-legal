@@ -5,7 +5,7 @@ const validateToken = require("../middlewares/validateToken");
 const router = Router();
 
 router.post(
-  "/create/:nic",
+  "/create/:protocol",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   evidenceController.createEvidence
 );
@@ -20,6 +20,18 @@ router.get(
   "/search/:evidenceId",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   evidenceController.getEvidenceById
+);
+
+router.put(
+  "/update/:evidenceId",
+  validateToken(["ADMIN", "PERITO"]),
+  evidenceController.updateEvidence
+);
+
+router.patch(
+  "/update/verification/:evidenceId",
+  validateToken(["ADMIN", "PERITO"]),
+  evidenceController.updateVerified
 );
 
 module.exports = router;

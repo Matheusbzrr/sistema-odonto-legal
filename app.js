@@ -3,9 +3,11 @@ const cors = require("cors");
 const app = express();
 
 // rotas
+const patientRoutes = require("./src/routes/patienteRoute");
 const userRoutes = require("./src/routes/userRoute");
 const caseRoutes = require("./src/routes/caseRoute");
-const evidenceRoutes = require("./src/routes/evidenceRoute")
+const evidenceRoutes = require("./src/routes/evidenceRoute");
+const reportRoutes = require("./src/routes/reportRoute");
 
 const corsOptions = {
   origin: "*",
@@ -18,8 +20,10 @@ app.use(express.json());
 
 // rotas da API
 app.use("/api", userRoutes);
+app.use("/api/patient", patientRoutes);
 app.use("/api/cases", caseRoutes);
-app.use("/api/evidence",evidenceRoutes )
+app.use("/api/evidence", evidenceRoutes);
+app.use("/api/report", reportRoutes);
 
 app.get("/home", (req, res) => {
   res.status(200).json({ msg: "Bem-vindo à API!" });

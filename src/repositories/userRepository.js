@@ -10,7 +10,8 @@ const getAllUsers = async (offSet, limit) => {
   return await User.find({ status: "APROVADO" })
     .skip(offSet)
     .limit(limit)
-    .select("-password");
+    .select("-password")
+    .sort({ createdAt: -1 });
 };
 
 const getUserByCpf = async (cpf) => {
@@ -31,7 +32,8 @@ const getUsersStatus = async (offSet, limit, data) => {
   return await User.find({ status: data })
     .skip(offSet)
     .limit(limit)
-    .select("-password");
+    .select("-password")
+    .sort({ createdAt: -1 });
 };
 
 const updateStatus = async (id, newStatus, identification) => {

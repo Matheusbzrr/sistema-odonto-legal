@@ -30,11 +30,11 @@ router.get(
   caseController.getCasesByCpfUser
 );
 
-// busca caso por por nic.
+// busca caso por por protocol.
 router.get(
-  "/search/case",
+  "/search/protocol",
   validateToken(["ADMIN", "PERITO"]),
-  caseController.getCaseByNic
+  caseController.getCaseByProtocol
 );
 
 // lista casos por status
@@ -46,13 +46,13 @@ router.get(
 
 // atualiza status do caso
 router.patch(
-  "/status/:nic",
+  "/status/:protocol",
   validateToken(["ADMIN", "PERITO"]),
-  caseController.updateStatusCaseByNic
+  caseController.updateStatusCaseByProtocol
 );
 
 router.put(
-  "/data/:nic",
+  "/data/:protocol",
   validateToken(["ADMIN", "PERITO"]),
   caseController.updateDataCase
 );

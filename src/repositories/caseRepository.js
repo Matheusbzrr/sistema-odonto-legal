@@ -13,10 +13,15 @@ const getAllCases = async (offSet, limit) => {
     .limit(limit)
     .populate("openedBy", "name role cpf")
     .populate("involved", "name role cpf")
-    .populate(
-      "evidence",
-      "title descriptionTechnical condition obs collector category"
-    );
+    .populate({
+      path: "evidence",
+      select: "title descriptionTechnical condition obs collector category",
+      populate: {
+        path: "collector",
+        select: "name role cpf",
+      },
+    })
+    .sort({ createdAt: -1 });
 };
 
 // lista todos os casos onde usuarios criou e esta envolvido
@@ -38,7 +43,8 @@ const getCasesByInUser = async (offSet, limit, userId) => {
         path: "collector",
         select: "name role cpf",
       },
-    });
+    })
+    .sort({ createdAt: -1 });
 
   return cases;
 };
@@ -54,10 +60,15 @@ const getCasesByCpfUser = async (offSet, limit, cpf) => {
     })
     .skip(offSet)
     .limit(limit)
-    .populate(
-      "evidence",
-      "title descriptionTechnical condition obs collector category"
-    );
+    .populate({
+      path: "evidence",
+      select: "title descriptionTechnical condition obs collector category",
+      populate: {
+        path: "collector",
+        select: "name role cpf",
+      },
+    })
+    .sort({ createdAt: -1 });
   return cases.filter((c) => c.openedBy?.cpf === cpf || c.involved.length > 0);
 };
 
@@ -70,33 +81,44 @@ const getCasesByStatus = async (status, offSet, limit) => {
     .limit(limit)
     .populate("openedBy", "name role cpf")
     .populate("involved", "name role cpf")
-    .populate(
-      "evidence",
-      "title descriptionTechnical condition obs collector category"
-    );
+    .populate({
+      path: "evidence",
+      select: "title descriptionTechnical condition obs collector category",
+      populate: {
+        path: "collector",
+        select: "name role cpf",
+      },
+    })
+    .sort({ createdAt: -1 });
 };
 
-// busca pelo nic e detalha as evidencias
-const getCaseByNic = async (nic) => {
-  return await Case.findOne({ nic })
+// busca pelo protocol e detalha as evidencias
+const getCaseByProtocol = async (protocol) => {
+  return await Case.findOne({ protocol })
     .populate("openedBy", "name role cpf")
     .populate("involved", "name role cpf")
-    .populate("evidence");
+    .populate({
+      path: "evidence",
+      populate: {
+        path: "collector",
+        select: "name role cpf",
+      },
+    });
 };
 
 //atualiza o status de um caso e define a data de fechamento se for finalizado
-const updateCaseStatus = async (userId, nic, newStatus) => {
+const updateCaseStatus = async (userId, protocol, newStatus) => {
   if (newStatus === "FINALIZADO") {
     const closedAt = new Date();
     return await Case.findOneAndUpdate(
-      { nic },
+      { protocol },
       { status: newStatus, closedAt, userId },
       { new: true, userId }
     );
   }
   if (newStatus === "EM ABERTO") {
     return await Case.findOneAndUpdate(
-      { nic },
+      { protocol },
       {
         status: newStatus,
         closedAt: null,
@@ -108,15 +130,15 @@ const updateCaseStatus = async (userId, nic, newStatus) => {
 
   const closedAt = new Date();
   return await Case.findOneAndUpdate(
-    { nic },
+    { protocol },
     { status: newStatus, closedAt, userId },
     { new: true }
   );
 };
 
-const updateCaseData = async (data, userId, nic) => {
+const updateCaseData = async (data, userId, protocol) => {
   return await Case.findOneAndUpdate(
-    { nic },
+    { protocol },
     { $set: data, userId },
     { new: true }
   );
@@ -128,7 +150,7 @@ module.exports = {
   getCasesByInUser,
   getCasesByCpfUser,
   getCasesByStatus,
-  getCaseByNic,
+  getCaseByProtocol,
   updateCaseStatus,
   updateCaseData,
 };

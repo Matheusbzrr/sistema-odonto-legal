@@ -21,19 +21,19 @@ const evidenceCategoryEnum = z.enum([
   "DIGITAL",
 ]);
 
-const createEvidenceDTO = z.object({
-  title: z.string().min(1, "Informe o titulo"),
-  testimony: z.string().optional(),
-  descriptionTechnical: z.string().min(1, "Description is required"),
-  condition: evidenceConditionEnum,
-  evidenceVerified: z.boolean().optional(),
-  whoVerified: z.any().optional(),
-  photo: z.string().optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
-  obs: z.string().optional(),
-  category: evidenceCategoryEnum.optional(),
-});
+const createEvidenceDTO = z
+  .object({
+    title: z.string().min(1, "Informe o titulo"),
+    testimony: z.string().optional(),
+    descriptionTechnical: z.string().min(1, "Description is required"),
+    condition: evidenceConditionEnum,
+    photo: z.string().optional(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+    obs: z.string().optional(),
+    category: evidenceCategoryEnum.optional(),
+  })
+  .strict();
 
 const responseEvidence = z.object({
   id: z.string(),
@@ -57,11 +57,16 @@ const responseEvidence = z.object({
 
 const updateEvidenceDTO = createEvidenceDTO.partial();
 
+const updateEvidenceVerified = z.object({
+  evidenceVerified: z.boolean(),
+});
+
 const listEvidenceResponseDTO = z.array(responseEvidence);
 
 module.exports = {
   createEvidenceDTO,
   responseEvidence,
   updateEvidenceDTO,
+  updateEvidenceVerified,
   listEvidenceResponseDTO,
 };

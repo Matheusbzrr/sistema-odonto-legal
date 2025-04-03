@@ -112,21 +112,21 @@ const getCasesByCpfUser = async (req, res) => {
   }
 };
 
-// busca caso por Nic
-const getCaseByNic = async (req, res) => {
-  if (!req.body.nic) {
-    return res.status(400).json({ message: "Nic do não foi passado." });
+// busca caso por protocol
+const getCaseByProtocol = async (req, res) => {
+  if (!req.body.protocol) {
+    return res.status(400).json({ message: "protocol do não foi passado." });
   }
 
   try {
-    const nic = req.body.nic;
-    if (typeof nic !== "string") {
+    const protocol = req.body.protocol;
+    if (typeof protocol !== "string") {
       return res
         .status(400)
-        .json({ message: "Passe o nic no formato correto." });
+        .json({ message: "Passe o protocol no formato correto." });
     }
 
-    const result = await caseService.getCaseByNic(nic);
+    const result = await caseService.getCaseByNic(protocol);
     const validated = caseDTO.caseResponseDTO.parse(result);
     return res.status(200).json(validated);
   } catch (error) {
@@ -173,11 +173,11 @@ const getCasesByStatus = async (req, res) => {
 };
 
 // atualiza o status de um caso
-const updateStatusCaseByNic = async (req, res) => {
-  if (!req.params.nic) {
+const updateStatusCaseByProtocol = async (req, res) => {
+  if (!req.params.protocol) {
     return res
       .status(400)
-      .json({ message: "É obrigatório passar NIC do caso !" });
+      .json({ message: "É obrigatório passar protocol do caso !" });
   }
 
   if (!req.body) {
@@ -190,7 +190,7 @@ const updateStatusCaseByNic = async (req, res) => {
     const validated = caseDTO.caseUpdateStatusDTO.parse(req.body);
     await caseService.updateCaseStatus(
       req.userId,
-      req.params.nic,
+      req.params.protocol,
       validated.status
     );
     return res.status(204).json();
@@ -209,7 +209,7 @@ const updateStatusCaseByNic = async (req, res) => {
 };
 
 const updateDataCase = async (req, res) => {
-  if (!req.params.nic) {
+  if (!req.params.protocol) {
     return res.status(404).json({ message: "Caso não encontrado" });
   }
 
@@ -222,7 +222,7 @@ const updateDataCase = async (req, res) => {
     const result = await caseService.updateCaseData(
       validated,
       req.userId,
-      req.params.nic
+      req.params.protocol
     );
     res.status(204).json(result);
   } catch (error) {
@@ -244,8 +244,8 @@ module.exports = {
   getAllCases,
   getCasesByInUser,
   getCasesByCpfUser,
-  getCaseByNic,
+  getCaseByProtocol,
   getCasesByStatus,
-  updateStatusCaseByNic,
+  updateStatusCaseByProtocol,
   updateDataCase,
 };

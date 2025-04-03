@@ -14,7 +14,12 @@ const LocationSchema = new mongoose.Schema({
 // esquema para o caso
 const caseSchema = new mongoose.Schema(
   {
-    nic: { type: String, required: true, unique: true },
+    protocol: { type: String, required: true, unique: true },
+    patient: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Patient",
+      required: true,
+    },
     title: { type: String, required: true },
     status: {
       type: String,

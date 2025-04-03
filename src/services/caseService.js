@@ -1,11 +1,11 @@
 const caseRepository = require("../repositories/caseRepository");
-
+const notificationService = require("./notificationService");
 // cria novo caso
 const createCase = async (data, userId) => {
-  // verifica se NIC já existe
-  const existingCase = await caseRepository.getCaseByNic(data.nic);
+  // verifica se protocol já existe
+  const existingCase = await caseRepository.getCaseByProtocol(data.protocol);
   if (existingCase) {
-    throw { status: 409, message: "NIC já cadastrado!" };
+    throw { status: 409, message: "Caso já cadastrado!" };
   }
 
   await caseRepository.createCase(data, userId); // passa o id do usuario parao repositorio
@@ -46,9 +46,9 @@ const casesByCpfUser = async (page, cpf) => {
   return cases;
 };
 
-// busca caso por NIC
-const getCaseByNic = async (nic) => {
-  const foundCase = await caseRepository.getCaseByNic(nic);
+// busca caso por protocol
+const getCaseByProtocol = async (protocol) => {
+  const foundCase = await caseRepository.getCaseByProtocol(protocol);
   if (!foundCase) {
     throw { status: 404, message: "Caso não encontrado!" };
   }
@@ -70,26 +70,68 @@ const getCasesByStatus = async (status, page) => {
 };
 
 // atualiza status do caso
-const updateCaseStatus = async (userId, nic, updateData) => {
-  const data = await caseRepository.getCaseByNic(nic);
+const updateCaseStatus = async (userId, protocol, updateData) => {
+  const data = await caseRepository.getCaseByProtocol(protocol);
   if (!data) {
     throw { status: 404, message: "Caso não encontrado!" };
   }
 
-  return await caseRepository.updateCaseStatus(userId, nic, updateData);
+  return await caseRepository.updateCaseStatus(userId, protocol, updateData);
 };
 
-const updateCaseData = async (data, userId, nic) => {
-  const oldCase = await caseRepository.getCaseByNic(nic);
+const updateCaseData = async (data, userId, protocol) => {
+  const oldCase = await caseRepository.getCaseByProtocol(protocol);
   if (!oldCase) {
     throw { status: 404, message: "Caso não encontrado!" };
   }
 
-  if(oldCase.status === "FINALIZADO" || oldCase.status === "ARQUIVADO"){
-    throw { status: 403, message: "Não é possível alterar dados de um caso finalizado ou arquivado! Solicite uma reabertura para realizar modificações." };
+  if (oldCase.status === "FINALIZADO" || oldCase.status === "ARQUIVADO") {
+    throw {
+      status: 403,
+      message:
+        "Não é possível alterar dados de um caso finalizado ou arquivado! Solicite uma reabertura para realizar modificações.",
+    };
   }
 
-  return await caseRepository.updateCaseData(data, userId, nic);
+  let novosEnvolvidos = [];
+
+  if (data.involved && Array.isArray(data.involved)) {
+    // Encontrar usuários que já estão no caso
+    const duplicados = data.involved.filter((user) =>
+      oldCase.involved.includes(user)
+    );
+
+    if (duplicados.length > 0) {
+      throw {
+        status: 409,
+        message: `Os seguintes usuários já estão no caso: ${duplicados.join(
+          ", "
+        )}.`,
+      };
+    }
+
+    // Identificar apenas os novos envolvidos
+    novosEnvolvidos = data.involved.filter(
+      (user) => !oldCase.involved.includes(user)
+    );
+  }
+
+  // Atualizar o caso no banco de dados
+  const updatedCase = await caseRepository.updateCaseData(
+    data,
+    userId,
+    protocol
+  );
+
+  // Enviar notificações apenas para os novos envolvidos
+  if (novosEnvolvidos.length > 0) {
+    for (const newUser of novosEnvolvidos) {
+      const message = `Você foi incluído no caso ${updatedCase.nic}.`;
+      await notificationService.notifyUser(newUser, updatedCase._id, message);
+    }
+  }
+
+  return updatedCase;
 };
 
 module.exports = {
@@ -97,7 +139,7 @@ module.exports = {
   getAllCases,
   casesByUser,
   casesByCpfUser,
-  getCaseByNic,
+  getCaseByProtocol,
   getCasesByStatus,
   updateCaseStatus,
   updateCaseData,
