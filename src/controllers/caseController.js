@@ -126,7 +126,7 @@ const getCaseByProtocol = async (req, res) => {
         .json({ message: "Passe o protocol no formato correto." });
     }
 
-    const result = await caseService.getCaseByNic(protocol);
+    const result = await caseService.getCaseByProtocol(protocol);
     const validated = caseDTO.caseResponseDTO.parse(result);
     return res.status(200).json(validated);
   } catch (error) {

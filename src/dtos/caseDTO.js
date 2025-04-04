@@ -88,7 +88,7 @@ const caseUpdateDataDTO = z
       "AVALIAÇÃO DE LESÕES",
       "FRAUDE ODONTOLÓGICA",
       "DIREITOS HUMANOS",
-    ]),
+    ]).optional(),
     involved: z.array(z.string()).optional(), // Lista de IDs de usuários envolvidos
     evidence: z.array(z.string()).optional(),
   })

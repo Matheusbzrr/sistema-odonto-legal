@@ -10,25 +10,14 @@ const getCasesByPatients = async (patients) => {
   return await Case.find({ patient: { $in: patients } });
 };
 
-//lista todos os casos com paginação
 const getAllCases = async (offSet, limit) => {
   return await Case.find()
     .skip(offSet)
     .limit(limit)
-    .populate("openedBy", "name role cpf")
-    .populate("involved", "name role cpf")
-    .populate({
-      path: "evidence",
-      select: "title descriptionTechnical condition obs collector category",
-      populate: {
-        path: "collector",
-        select: "name role cpf",
-      },
-    })
+    .populate("patient", "nic ")
     .sort({ createdAt: -1 });
 };
 
-// lista todos os casos onde usuarios criou e esta envolvido
 const getCasesByInUser = async (offSet, limit, userId) => {
   const cases = await Case.find({
     $or: [
@@ -38,16 +27,7 @@ const getCasesByInUser = async (offSet, limit, userId) => {
   })
     .skip(offSet)
     .limit(limit)
-    .populate("openedBy", "name role cpf")
-    .populate("involved", "name role cpf")
-    .populate({
-      path: "evidence",
-      select: "title descriptionTechnical condition obs collector category",
-      populate: {
-        path: "collector",
-        select: "name role cpf",
-      },
-    })
+    .populate("patient", "nic ")
     .sort({ createdAt: -1 });
 
   return cases;
@@ -56,10 +36,10 @@ const getCasesByInUser = async (offSet, limit, userId) => {
 // busca todos os casos de um usuario passando o cpf dele
 const getCasesByCpfUser = async (offSet, limit, cpf) => {
   const cases = await Case.find()
-    .populate("openedBy", "name role cpf")
+    .populate("openedBy", "name role")
     .populate({
       path: "involved",
-      select: "name role cpf",
+      select: "name role",
       match: { cpf },
     })
     .skip(offSet)
@@ -69,7 +49,7 @@ const getCasesByCpfUser = async (offSet, limit, cpf) => {
       select: "title descriptionTechnical condition obs collector category",
       populate: {
         path: "collector",
-        select: "name role cpf",
+        select: "name role",
       },
     })
     .sort({ createdAt: -1 });
@@ -83,14 +63,14 @@ const getCasesByStatus = async (status, offSet, limit) => {
     .equals(status)
     .skip(offSet)
     .limit(limit)
-    .populate("openedBy", "name role cpf")
-    .populate("involved", "name role cpf")
+    .populate("openedBy", "name role")
+    .populate("involved", "name role")
     .populate({
       path: "evidence",
       select: "title descriptionTechnical condition obs collector category",
       populate: {
         path: "collector",
-        select: "name role cpf",
+        select: "name role",
       },
     })
     .sort({ createdAt: -1 });
@@ -99,15 +79,27 @@ const getCasesByStatus = async (status, offSet, limit) => {
 // busca pelo protocol e detalha as evidencias
 const getCaseByProtocol = async (protocol) => {
   return await Case.findOne({ protocol })
-    .populate("openedBy", "name role cpf")
-    .populate("involved", "name role cpf")
+    .populate("openedBy", "name role")
+    .populate("involved", "name role")
     .populate({
       path: "evidence",
       populate: {
         path: "collector",
-        select: "name role cpf",
+        select: "name role",
       },
-    });
+    }).populate({
+      path: "patient",
+      select: "name nic identificationStatus dentalHistory",
+      populate: {
+        path: "dentalHistory",
+        select: "examType",
+        populate: {
+          path: "examiner",
+          select: "name role",
+        },
+      },
+    })
+    ;
 };
 
 //atualiza o status de um caso e define a data de fechamento se for finalizado
@@ -159,3 +151,4 @@ module.exports = {
   updateCaseStatus,
   updateCaseData,
 };
+

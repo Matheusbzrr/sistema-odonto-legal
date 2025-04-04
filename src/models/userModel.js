@@ -27,13 +27,6 @@ const UserSchema = new mongoose.Schema(
     dateOfBirth: { type: String, required: true },
     address: AddressSchema,
     isActive: { type: Boolean, default: true },
-    status: {
-      type: String,
-      default: "APROVADO",
-      enum: ["PENDENTE", "APROVADO", "NEGADO"],
-    },
-    responseBy: { type: String },
-    solicitationTitle: { type: String },
   },
   { timestamps: true }
 );

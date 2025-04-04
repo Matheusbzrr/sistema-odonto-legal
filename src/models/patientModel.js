@@ -14,7 +14,7 @@ const patientSchema = new mongoose.Schema(
   {
     nic: { type: String, required: true, unique: true },
     name: { type: String, required: true },
-    age: { type: Number, required: true },
+    age: { type: Number },
     cpf: { type: String },
     address: LocationSchema,
     identificationStatus: {

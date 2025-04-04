@@ -5,7 +5,6 @@ const { v4: uuidv4 } = require("uuid");
 // cria novo caso
 const createCase = async (data, userId) => {
   const patient = await patientService.getPatientByNic(data.nic);
-  console.log(patient);
   if (!patient) {
     throw { status: 404, message: "Paciente não encontrado!" };
   }
@@ -14,13 +13,11 @@ const createCase = async (data, userId) => {
   if (existingCases.length > 0) {
     throw {
       status: 409,
-      message: `Os seguintes pacientes já possuem um caso registrado: ${existingCases
-        .map((c) => c.patient.name)
-        .join(", ")}`,
+      message: "A vitima já tem um caso.",
     };
   }
 
-  const protocol = uuidv4();
+  const protocol = uuidv4().split("-")[0];
 
   const caseCreated = await caseRepository.createCase(
     data,

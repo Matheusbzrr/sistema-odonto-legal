@@ -13,7 +13,7 @@ const AddressSchema = z.object({
 const createPatientSchema = z.object({
   nic: z.string().min(1, "NIC é obrigatório."),
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres."),
-  age: z.number().min(0, "Idade não pode ser negativa."),
+  age: z.number().optional(),
   cpf: z.string().optional(),
   address: AddressSchema.optional(),
   identificationStatus: z.enum([
@@ -26,7 +26,7 @@ const createPatientSchema = z.object({
 const responsePatienteDTO = z.object({
   nic: z.string(),
   name: z.string(),
-  age: z.number(),
+  age: z.number().optional(),
   cpf: z.string().optional(),
   address: AddressSchema.optional(),
   identificationStatus: z.enum([

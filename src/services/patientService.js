@@ -1,10 +1,14 @@
 const patientRepository = require("../repositories/patientRepository");
 
 const createPatient = async (data) => {
-  // verifica se CPF já existe
-  const patientExists = await patientRepository.getPatientByCpf(data.cpf);
-  if (patientExists) {
-    throw { status: 409, message: `CPF já cadastrado! Pertence ao paciente ${patientExists.name} com nic: ${patientExists.nic} ` };
+  if (data.cpf) {
+    const patientExists = await patientRepository.getPatientByCpf(data.cpf);
+    if (patientExists) {
+      throw {
+        status: 409,
+        message: `CPF já cadastrado! Pertence ao paciente ${patientExists.name} com nic: ${patientExists.nic} `,
+      };
+    }
   }
 
   const patientExistsByNic = await patientRepository.getPatientByNic(data.nic);

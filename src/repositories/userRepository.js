@@ -7,11 +7,15 @@ const create = async (data) => {
 };
 
 const getAllUsers = async (offSet, limit) => {
-  return await User.find({ status: "APROVADO" })
+  return await User.find({ isActive: true })
     .skip(offSet)
     .limit(limit)
     .select("-password")
     .sort({ createdAt: -1 });
+};
+
+const getAllUsersButton = async () => {
+  return await User.find({ isActive: true }).select("name role");
 };
 
 const getUserByCpf = async (cpf) => {
@@ -25,57 +29,6 @@ const getUserById = async (data) => {
 // busca usuario por email
 const getUserByEmail = async (email) => {
   return await User.findOne({ email });
-};
-
-// busca todos usuarios a partir do status passado
-const getUsersStatus = async (offSet, limit, data) => {
-  return await User.find({ status: data })
-    .skip(offSet)
-    .limit(limit)
-    .select("-password")
-    .sort({ createdAt: -1 });
-};
-
-const updateStatus = async (id, newStatus, identification) => {
-  const updateStatusUser = await User.findByIdAndUpdate(
-    id,
-    { status: newStatus, responseBy: identification },
-    { new: true }
-  );
-  return updateStatusUser;
-};
-
-const updatePassword = async (
-  id,
-  newPassword,
-  newSolicitation,
-  newStatus,
-  newResponseBy
-) => {
-  const updatePasswordUser = await User.findByIdAndUpdate(
-    id,
-    {
-      password: newPassword,
-      solicitationTitle: newSolicitation,
-      status: newStatus,
-      responseBy: newResponseBy,
-    },
-    { new: true }
-  );
-  return updatePasswordUser;
-};
-
-const updatePasswordInSystem = async (id, newPassword) => {
-  return await User.findByIdAndUpdate(id, { password: newPassword });
-};
-
-const updatePasswordByAdmin = async (_id, passwordHash, responseBy) => {
-  return await User.findByIdAndUpdate(_id, {
-    password: passwordHash,
-    status: "APROVADO",
-    solicitationTitle: `Última solicitação: usuário teve recuperação de senha negada, então admin ${responseBy} alterou direto no sistema.`,
-    responseBy: responseBy,
-  });
 };
 
 const updateProfile = async (id, newData) => {
@@ -93,22 +46,13 @@ const updateUserAddress = async (userId, newAddress) => {
   );
 };
 
-const deleteUser = async (id) => {
-  await User.findByIdAndDelete(id);
-};
-
 module.exports = {
   create,
   getAllUsers,
+  getAllUsersButton,
   getUserByCpf,
   getUserById,
   getUserByEmail,
-  getUsersStatus,
-  updateStatus,
-  updatePassword,
-  updatePasswordInSystem,
-  updatePasswordByAdmin,
   updateProfile,
   updateUserAddress,
-  deleteUser,
 };
