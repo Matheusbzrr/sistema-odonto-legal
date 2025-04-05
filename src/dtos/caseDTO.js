@@ -62,11 +62,16 @@ const caseResponseDTO = z.object({
   evidence: z.array(z.any()).optional(),
 });
 
-//DTO para resposta de lista de casos
-
-const caseListDTO = z.array(caseResponseDTO);
-
-// DTO para atualização de status de caso
+const caseListDTO = z.array(
+  caseResponseDTO.omit({
+    BO: true,
+    inquiryNumber: true,
+    openedBy: true,
+    observations: true,
+    involved: true,
+    location: true,
+  })
+);
 
 const caseUpdateStatusDTO = z.object({
   status: z.enum(["EM ABERTO", "FINALIZADO", "ARQUIVADO"]),
@@ -80,15 +85,17 @@ const caseUpdateDataDTO = z
     BO: z.string().optional(),
     observations: z.string().optional(),
     location: locationDTO.optional(),
-    caseType: z.enum([
-      "ACIDENTE",
-      "IDENTIFICAÇÃO DE VÍTIMA",
-      "EXAME CRIMINAL",
-      "MORDIDA",
-      "AVALIAÇÃO DE LESÕES",
-      "FRAUDE ODONTOLÓGICA",
-      "DIREITOS HUMANOS",
-    ]).optional(),
+    caseType: z
+      .enum([
+        "ACIDENTE",
+        "IDENTIFICAÇÃO DE VÍTIMA",
+        "EXAME CRIMINAL",
+        "MORDIDA",
+        "AVALIAÇÃO DE LESÕES",
+        "FRAUDE ODONTOLÓGICA",
+        "DIREITOS HUMANOS",
+      ])
+      .optional(),
     involved: z.array(z.string()).optional(), // Lista de IDs de usuários envolvidos
     evidence: z.array(z.string()).optional(),
   })
