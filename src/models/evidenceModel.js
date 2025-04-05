@@ -52,11 +52,11 @@ evidenceSchema.pre("save", async function (next) {
     if (this.idCase) {
       await mongoose.model("Case").findByIdAndUpdate(
         this.idCase,
-        { $push: { evidence: this._id } }, // Corrigido o nome do campo
+        { $push: { evidence: this._id } }, 
         { new: true, useFindAndModify: false }
       );
     }
-    next(); // Chama next() para continuar o fluxo
+    next(); 
   } catch (error) {
     console.error(error);
     next(new Error("Error in pre save hook of Evidence Schema"));

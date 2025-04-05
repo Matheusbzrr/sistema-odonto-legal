@@ -19,13 +19,13 @@ router.get(
 );
 
 router.get(
-  "/mycases/:page",
+  "/mycases/:page?",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   caseController.getCasesByInUser
 );
 
 router.get(
-  "/search/user/:page",
+  "/search/user/:page?",
   validateToken(["ADMIN"]),
   caseController.getCasesByCpfUser
 );
