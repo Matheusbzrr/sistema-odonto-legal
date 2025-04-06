@@ -25,14 +25,14 @@ router.get(
 );
 
 router.get(
-  "/search/user/:cpf?/:page?",
+  "/search/user/:cpf/:page?",
   validateToken(["ADMIN"]),
   caseController.getCasesByCpfUser
 );
 
 // busca caso por por protocol.
 router.get(
-  "/search/:protocol?",
+  "/search/protocol",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   caseController.getCaseByProtocol
 );

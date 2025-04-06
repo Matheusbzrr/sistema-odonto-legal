@@ -150,12 +150,15 @@ const getCasesByStatus = async (req, res) => {
     return res.status(400).json({ message: "Página inválida!" });
   }
 
-  if (!req.params.status) {
+  const status = req.params.status;
+  console.log(status);
+
+  if (!status) {
     return res.status(400).json({ message: "É necessário informar o status." });
   }
 
   try {
-    const result = await caseService.getCasesByStatus(req.params.status, page);
+    const result = await caseService.getCasesByStatus(status, page);
     const validated = caseDTO.caseListDTO.parse(result);
     return res.status(200).json(validated);
   } catch (error) {

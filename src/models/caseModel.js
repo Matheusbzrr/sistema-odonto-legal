@@ -23,8 +23,8 @@ const caseSchema = new mongoose.Schema(
     title: { type: String, required: true },
     status: {
       type: String,
-      enum: ["EM ABERTO", "FINALIZADO", "ARQUIVADO"],
-      default: "EM ABERTO",
+      enum: ["ABERTO", "FINALIZADO", "ARQUIVADO"],
+      default: "ABERTO",
       required: true,
     },
     openedAt: { type: Date, default: Date.now },

@@ -38,7 +38,7 @@ const caseResponseDTO = z.object({
   protocol: z.string(),
   patient: z.any(),
   title: z.string(),
-  status: z.enum(["EM ABERTO", "FINALIZADO", "ARQUIVADO"]),
+  status: z.enum(["ABERTO", "FINALIZADO", "ARQUIVADO"]),
   openedAt: z.date(), // mudei para data pois no banco ta salvo como data direto
   closedAt: z
     .any()
@@ -79,7 +79,7 @@ const caseListDTO = z.array(
 );
 
 const caseUpdateStatusDTO = z.object({
-  status: z.enum(["EM ABERTO", "FINALIZADO", "ARQUIVADO"]),
+  status: z.enum(["ABERTO", "FINALIZADO", "ARQUIVADO"]),
   closedAt: z.string().optional(),
 });
 
