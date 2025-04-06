@@ -56,23 +56,9 @@ const updateEvidence = async (evidenceId, updatedData) => {
   return await evidenceRepository.updateEvidence(evidenceId, updatedData);
 };
 
-const updateVerified = async (evidenceId, updatedData, userId) => {
-  const evidence = await evidenceRepository.getEvidenceById(evidenceId);
-  if (!evidence) {
-    throw { status: 404, message: "Evidência não encontrada!" };
-  }
-
-  updatedData.whoVerified = userId;
-
-  console.log(updatedData);
-
-  return await evidenceRepository.updateEvidence(evidenceId, updatedData);
-};
-
 module.exports = {
   createEvidence,
   getAllEvidencesInCase,
   getEvidenceById,
   updateEvidence,
-  updateVerified,
 };

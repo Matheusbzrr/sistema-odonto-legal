@@ -63,16 +63,7 @@ const getCasesByStatus = async (status, offSet, limit) => {
     .equals(status)
     .skip(offSet)
     .limit(limit)
-    .populate("openedBy", "name role")
-    .populate("involved", "name role")
-    .populate({
-      path: "evidence",
-      select: "title descriptionTechnical condition obs collector category",
-      populate: {
-        path: "collector",
-        select: "name role",
-      },
-    })
+    .populate("patient", "nic ")
     .sort({ createdAt: -1 });
 };
 
@@ -88,18 +79,7 @@ const getCaseByProtocol = async (protocol) => {
         select: "name role",
       },
     })
-    .populate({
-      path: "patient",
-      select: "name nic identificationStatus dentalHistory",
-      populate: {
-        path: "dentalHistory",
-        select: "examType",
-        populate: {
-          path: "examiner",
-          select: "name role",
-        },
-      },
-    });
+    .populate("patient");
 };
 
 const getCaseByDate = async (date) => {
@@ -111,7 +91,7 @@ const getCaseByDate = async (date) => {
       $gte: start,
       $lte: end,
     },
-  }).sort({ createdAt: -1 });
+  }).populate("patient", "nic ").sort({ createdAt: -1 });
 
   return casos;
 };

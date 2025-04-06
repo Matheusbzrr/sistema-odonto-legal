@@ -4,7 +4,6 @@ const app = express();
 
 // rotas
 const patientRoutes = require("./src/routes/patienteRoute");
-const dentalHistory = require("./src/routes/dentalHistoryRoute");
 const userRoutes = require("./src/routes/userRoute");
 const caseRoutes = require("./src/routes/caseRoute");
 const evidenceRoutes = require("./src/routes/evidenceRoute");
@@ -22,7 +21,6 @@ app.use(express.json());
 // rotas da API
 app.use("/api", userRoutes);
 app.use("/api/patient", patientRoutes);
-app.use("/api/exam", dentalHistory);
 app.use("/api/cases", caseRoutes);
 app.use("/api/evidence", evidenceRoutes);
 app.use("/api/report", reportRoutes);

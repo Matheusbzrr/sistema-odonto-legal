@@ -15,13 +15,11 @@ const LocationSchema = new mongoose.Schema({
 const caseSchema = new mongoose.Schema(
   {
     protocol: { type: String, required: true, unique: true },
-    patient: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Patient",
-        required: true,
-      },
-    ],
+    patient: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Patient",
+      required: true,
+    },
     title: { type: String, required: true },
     status: {
       type: String,

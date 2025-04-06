@@ -42,8 +42,6 @@ const responseEvidence = z.object({
   descriptionTechnical: z.string(),
   idCase: z.any(),
   condition: evidenceConditionEnum,
-  evidenceVerified: z.boolean().optional(),
-  whoVerified: z.any().optional(),
   photo: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),

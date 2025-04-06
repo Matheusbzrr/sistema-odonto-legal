@@ -127,7 +127,7 @@ const getCaseByProtocol = async (req, res) => {
     }
 
     const result = await caseService.getCaseByProtocol(protocol);
-    const validated = caseDTO.caseResponseDTO.parse(result);
+    const validated = caseDTO.caseResponseDetailsDTO.parse(result);
     return res.status(200).json(validated);
   } catch (error) {
     if (error instanceof z.ZodError) {

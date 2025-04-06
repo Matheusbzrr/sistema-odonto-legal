@@ -113,42 +113,10 @@ const updateEvidence = async (req, res) => {
   }
 };
 
-const updateVerified = async (req, res) => {
-  const evidenceId = req.params.evidenceId;
-  if (!evidenceId) {
-    return res
-      .status(400)
-      .json({ message: "É necessário informar ID da evidência." });
-  }
-
-  if (!req.body) {
-    return res
-      .status(400)
-      .json({ message: "É necessário informar o novo status verificado." });
-  }
-
-  try {
-    const validated = evidenceDTO.updateEvidenceVerified.parse(req.body);
-    await evidenceService.updateVerified(evidenceId, validated, req.userId);
-    return res.status(200).json("Status verificado atualizado com sucesso!");
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        message: "Erro de validação dos dados",
-        errors: error.errors,
-      });
-    }
-    if (error.status) {
-      return res.status(error.status).json({ message: error.message });
-    }
-    return res.status(500).json({ message: error.message });
-  }
-};
 
 module.exports = {
   createEvidence,
   getAllEvidencesInCase,
   getEvidenceById,
   updateEvidence,
-  updateVerified
 };

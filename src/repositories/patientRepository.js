@@ -10,27 +10,14 @@ const getAllPatients = async (offset, limit) => {
     .skip(offset)
     .limit(limit)
     .sort({ createdAt: -1 })
-    .populate({
-      path: "dentalHistory",
-      select:
-        "examType toothCharting photo examiner injuryDetails createdAt updatedAt",
-      populate: {
-        path: "examiner",
-        select: "name role",
-      },
-    });
+    .populate("idCase", "protocol, title, status");
 };
 
 const getPatientByNic = async (nic) => {
-  return await Patient.findOne({ nic }).populate({
-    path: "dentalHistory",
-    select:
-      "examType toothCharting photo examiner injuryDetails createdAt updatedAt",
-    populate: {
-      path: "examiner",
-      select: "name role",
-    },
-  });
+  return await Patient.findOne({ nic }).populate(
+    "idCase",
+    "protocol, title, status"
+  );
 };
 
 const getPatientByCpf = async (cpf) => {

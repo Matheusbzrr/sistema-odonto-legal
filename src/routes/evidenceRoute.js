@@ -28,10 +28,4 @@ router.put(
   evidenceController.updateEvidence
 );
 
-router.patch(
-  "/update/verification/:evidenceId?",
-  validateToken(["ADMIN", "PERITO"]),
-  evidenceController.updateVerified
-);
-
 module.exports = router;

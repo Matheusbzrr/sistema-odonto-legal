@@ -24,8 +24,6 @@ const evidenceSchema = new mongoose.Schema(
       ],
       required: true,
     },
-    evidenceVerified: { type: Boolean, default: false },
-    whoVerified: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     photo: { type: String },
     latitude: { type: Number },
     longitude: { type: Number },

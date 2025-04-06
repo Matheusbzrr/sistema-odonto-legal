@@ -10,14 +10,12 @@ const getAllEvidencesInCase = async (offset, limit, idCase) => {
     .skip(offset)
     .limit(limit)
     .populate("collector", " name role cpf")
-    .populate("whoVerified", "name role cpf")
     .sort({ createdAt: -1 });
 };
 
 const getEvidenceById = async (id) => {
   return await Evidence.findById(id)
     .populate("collector", " name role cpf")
-    .populate("whoVerified", "name role cpf")
     .sort({ createdAt: -1 });
 };
 

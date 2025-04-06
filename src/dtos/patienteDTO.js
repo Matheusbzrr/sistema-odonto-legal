@@ -34,7 +34,6 @@ const responsePatienteDTO = z.object({
     "NÃO IDENTIFICADO",
     "PARCIALMENTE IDENTIFICADO",
   ]),
-  dentalHistory: z.array(z.any()).optional(),
   idCase: z.any(),
   createdAt: z.date(),
   updatedAt: z.date(),
