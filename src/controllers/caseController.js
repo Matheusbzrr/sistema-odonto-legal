@@ -83,12 +83,12 @@ const getCasesByCpfUser = async (req, res) => {
     return res.status(400).json({ message: "Página inválida!" });
   }
 
-  if (!req.body.cpf) {
+  if (!req.params.cpf) {
     return res.status(400).json({ message: "CPF do não foi passado." });
   }
 
   try {
-    const cpf = req.body.cpf;
+    const cpf = req.params.cpf;
     if (typeof cpf !== "string" || cpf.length !== 11) {
       return res
         .status(400)
@@ -114,12 +114,12 @@ const getCasesByCpfUser = async (req, res) => {
 
 // busca caso por protocol
 const getCaseByProtocol = async (req, res) => {
-  if (!req.body.protocol) {
+  if (!req.params.protocol) {
     return res.status(400).json({ message: "protocol do não foi passado." });
   }
 
   try {
-    const protocol = req.body.protocol;
+    const protocol = req.params.protocol;
     if (typeof protocol !== "string") {
       return res
         .status(400)
@@ -150,12 +150,12 @@ const getCasesByStatus = async (req, res) => {
     return res.status(400).json({ message: "Página inválida!" });
   }
 
-  if (!req.body) {
+  if (!req.params.status) {
     return res.status(400).json({ message: "É necessário informar o status." });
   }
 
   try {
-    const result = await caseService.getCasesByStatus(req.body.status, page);
+    const result = await caseService.getCasesByStatus(req.params.status, page);
     const validated = caseDTO.caseListDTO.parse(result);
     return res.status(200).json(validated);
   } catch (error) {
