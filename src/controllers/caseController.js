@@ -145,12 +145,12 @@ const getCaseByProtocol = async (req, res) => {
 
 // lista casos por status com paginação
 const getCasesByStatus = async (req, res) => {
-  const page = req.params.page - 1;
+  const page = req.query.page - 1;
   if (page < 0) {
     return res.status(400).json({ message: "Página inválida!" });
   }
 
-  const status = req.params.status;
+  const status = req.query.status;
   console.log(status);
 
   if (!status) {
