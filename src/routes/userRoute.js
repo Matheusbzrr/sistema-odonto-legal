@@ -17,7 +17,7 @@ router.get(
 );
 
 router.get(
-  "/search/all",
+  "/search/all/:page?",
   validateToken(["ADMIN", "PERITO"]),
   userController.getAllUsers
 );
