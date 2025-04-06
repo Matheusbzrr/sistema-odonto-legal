@@ -4,31 +4,46 @@ const patientService = require("./patientService");
 const { v4: uuidv4 } = require("uuid");
 // cria novo caso
 const createCase = async (data, userId) => {
-  const patient = await patientService.getPatientByNic(data.nic);
-  if (!patient) {
-    throw { status: 404, message: "Paciente não encontrado!" };
-  }
+  const patients = await Promise.all(
+    data.nic.map(async (nic) => {
+      const patient = await patientService.getPatientByNic(nic);
+      if (!patient) {
+        throw {
+          status: 404,
+          message: `Paciente com NIC ${nic} não encontrado!`,
+        };
+      }
+      return { nic, _id: patient._id };
+    })
+  );
 
-  const existingCases = await caseRepository.getCasesByPatients(patient);
-  if (existingCases.length > 0) {
-    throw {
-      status: 409,
-      message: "A vitima já tem um caso.",
-    };
+  for (const { nic, _id } of patients) {
+    const cases = await caseRepository.getCasesByPatients(_id);
+    if (cases && cases.length > 0) {
+      throw {
+        status: 409,
+        message: `Paciente com ID ${nic} já possui um caso registrado.`,
+      };
+    }
   }
 
   const protocol = uuidv4().split("-")[0];
 
+  const patientIds = patients.map((p) => p._id);
+
   const caseCreated = await caseRepository.createCase(
     data,
     userId,
-    patient._id,
+    patientIds,
     protocol
   ); // passa o id do usuario parao repositorio
 
-  await patientService.updatePatient(data.nic, {
-    $push: { idCase: caseCreated._id },
-  });
+  for (const { nic } of patients) {
+    await patientService.updatePatient(nic, {
+      $push: { idCase: caseCreated._id },
+    });
+  }
+
   return { message: "Caso criado com sucesso!" };
 };
 
@@ -87,6 +102,16 @@ const getCasesByStatus = async (status, page) => {
   }
 
   return cases;
+};
+
+const getCasesByDate = async (date) => {
+  const filterDate = await caseRepository.getCaseByDate(date);
+  if (!filterDate) {
+    throw { status: 404, message: "Nenhum caso encontrado nessa data!" };
+  }
+
+
+  return filterDate;
 };
 
 // atualiza status do caso
@@ -161,6 +186,7 @@ module.exports = {
   casesByCpfUser,
   getCaseByProtocol,
   getCasesByStatus,
+  getCasesByDate,
   updateCaseStatus,
   updateCaseData,
 };

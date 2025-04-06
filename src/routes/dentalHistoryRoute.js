@@ -11,7 +11,7 @@ router.post(
 );
 
 router.get(
-  "/all/:page",
+  "/all/:page?",
   validateToken(["ADMIN", "PERITO"]),
   dentalHistoryController.getAllExams
 );

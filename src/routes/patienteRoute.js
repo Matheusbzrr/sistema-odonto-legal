@@ -11,25 +11,25 @@ router.post(
 );
 
 router.get(
-  "/all/:page",
+  "/all/:page?",
   validateToken(["ADMIN", "PERITO"]),
   patientController.getAllPatients
 );
 
 router.get(
-  "/search/:nic",
+  "/search/:nic?",
   validateToken(["ADMIN", "PERITO"]),
   patientController.getPatient
 );
 
 router.put(
-  "/update/:nic",
+  "/update/:nic?",
   validateToken(["ADMIN", "PERITO"]),
   patientController.updatePatient
 );
 
 router.put(
-  "/update/:nic",
+  "/update/:nic?",
   validateToken(["ADMIN", "PERITO"]),
   patientController.updatePatient
 );

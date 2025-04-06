@@ -172,6 +172,29 @@ const getCasesByStatus = async (req, res) => {
   }
 };
 
+const getCasesByDate = async (req, res) => {
+  if (!req.body) {
+    return res.status(400).json({ message: "É necessário informar a data." });
+  }
+
+  try {
+    const result = await caseService.getCasesByDate(req.body.date);
+    const validated = caseDTO.caseListDTO.parse(result);
+    return res.status(200).json(validated);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Erro de validação dos dados",
+        errors: error.errors,
+      });
+    }
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 // atualiza o status de um caso
 const updateStatusCaseByProtocol = async (req, res) => {
   if (!req.params.protocol) {
@@ -246,6 +269,7 @@ module.exports = {
   getCasesByCpfUser,
   getCaseByProtocol,
   getCasesByStatus,
+  getCasesByDate,
   updateStatusCaseByProtocol,
   updateDataCase,
 };

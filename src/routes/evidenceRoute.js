@@ -5,31 +5,31 @@ const validateToken = require("../middlewares/validateToken");
 const router = Router();
 
 router.post(
-  "/create/:protocol",
+  "/create/:protocol?",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   evidenceController.createEvidence
 );
 
 router.get(
-  "/all/:page",
+  "/all/:page?",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   evidenceController.getAllEvidencesInCase
 );
 
 router.get(
-  "/search/:evidenceId",
+  "/search/:evidenceId?",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   evidenceController.getEvidenceById
 );
 
 router.put(
-  "/update/:evidenceId",
+  "/update/:evidenceId?",
   validateToken(["ADMIN", "PERITO"]),
   evidenceController.updateEvidence
 );
 
 router.patch(
-  "/update/verification/:evidenceId",
+  "/update/verification/:evidenceId?",
   validateToken(["ADMIN", "PERITO"]),
   evidenceController.updateVerified
 );

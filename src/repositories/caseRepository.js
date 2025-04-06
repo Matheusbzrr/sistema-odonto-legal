@@ -6,8 +6,8 @@ const createCase = async (data, userId, patient, protocol) => {
   return await newCase.save();
 };
 
-const getCasesByPatients = async (patients) => {
-  return await Case.find({ patient: { $in: patients } });
+const getCasesByPatients = async (patient) => {
+  return await Case.find({ patient });
 };
 
 const getAllCases = async (offSet, limit) => {
@@ -87,7 +87,8 @@ const getCaseByProtocol = async (protocol) => {
         path: "collector",
         select: "name role",
       },
-    }).populate({
+    })
+    .populate({
       path: "patient",
       select: "name nic identificationStatus dentalHistory",
       populate: {
@@ -98,8 +99,21 @@ const getCaseByProtocol = async (protocol) => {
           select: "name role",
         },
       },
-    })
-    ;
+    });
+};
+
+const getCaseByDate = async (date) => {
+  const start = new Date(`${date}T00:00:00.000Z`);
+  const end = new Date(`${date}T23:59:59.999Z`);
+
+  const casos = await Case.find({
+    createdAt: {
+      $gte: start,
+      $lte: end,
+    },
+  }).sort({ createdAt: -1 });
+
+  return casos;
 };
 
 //atualiza o status de um caso e define a data de fechamento se for finalizado
@@ -148,7 +162,7 @@ module.exports = {
   getCasesByCpfUser,
   getCasesByStatus,
   getCaseByProtocol,
+  getCaseByDate,
   updateCaseStatus,
   updateCaseData,
 };
-

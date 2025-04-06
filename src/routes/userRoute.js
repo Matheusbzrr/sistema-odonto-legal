@@ -31,7 +31,7 @@ router.get(
 router.get("/oneuser", validateToken(["ADMIN"]), userController.getUser);
 
 router.put(
-  "/user/profile/:id",
+  "/user/profile/:id?",
   validateToken(["ADMIN"]),
   userController.updateProfile
 );
