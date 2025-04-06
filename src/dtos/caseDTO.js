@@ -14,7 +14,7 @@ const locationDTO = z
 
 const caseCreateDTO = z
   .object({
-    nic: z.any(),
+    nic: z.string().min(1, "NIC é obrigatório."),
     title: z.string().min(3, "O título deve ter pelo menos 3 caracteres."),
     inquiryNumber: z.string().optional(),
     BO: z.string().optional(),
