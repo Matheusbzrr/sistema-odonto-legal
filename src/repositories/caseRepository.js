@@ -82,7 +82,7 @@ const getCaseByProtocol = async (protocol) => {
     .populate("patient");
 };
 
-const getCaseByDate = async (date) => {
+const getCaseByDate = async (date, offSet, limit) => {
   const start = new Date(`${date}T00:00:00.000Z`);
   const end = new Date(`${date}T23:59:59.999Z`);
 
@@ -91,7 +91,11 @@ const getCaseByDate = async (date) => {
       $gte: start,
       $lte: end,
     },
-  }).populate("patient", "nic ").sort({ createdAt: -1 });
+  })
+    .skip(offSet)
+    .limit(limit)
+    .populate("patient", "nic ")
+    .sort({ createdAt: -1 });
 
   return casos;
 };

@@ -29,7 +29,7 @@ const createCase = async (req, res) => {
 
 // lista todos os casos com paginação
 const getAllCases = async (req, res) => {
-  const page = req.params.page - 1;
+  const page = req.query.page - 1;
   if (page < 0) {
     return res.status(400).json({ message: "Página inválida!" });
   }
@@ -54,7 +54,7 @@ const getAllCases = async (req, res) => {
 
 // BUSCAR CASO ONDE USER LOGADO ESTA ENVOLVIDO
 const getCasesByInUser = async (req, res) => {
-  const page = req.params.page - 1;
+  const page = req.query.page - 1;
   if (page < 0) {
     return res.status(400).json({ message: "Página inválida!" });
   }
@@ -78,17 +78,17 @@ const getCasesByInUser = async (req, res) => {
 
 // busca casos onde usuario buscado por CPF esta envolvido
 const getCasesByCpfUser = async (req, res) => {
-  const page = req.params.page - 1;
+  const page = req.query.page - 1;
   if (page < 0) {
     return res.status(400).json({ message: "Página inválida!" });
   }
 
-  if (!req.params.cpf) {
+  if (!req.query.cpf) {
     return res.status(400).json({ message: "CPF do não foi passado." });
   }
 
   try {
-    const cpf = req.params.cpf;
+    const cpf = req.query.cpf;
     if (typeof cpf !== "string" || cpf.length !== 11) {
       return res
         .status(400)
@@ -114,12 +114,12 @@ const getCasesByCpfUser = async (req, res) => {
 
 // busca caso por protocol
 const getCaseByProtocol = async (req, res) => {
-  if (!req.params.protocol) {
+  if (!req.query.protocol) {
     return res.status(400).json({ message: "protocol do não foi passado." });
   }
 
   try {
-    const protocol = req.params.protocol;
+    const protocol = req.query.protocol;
     if (typeof protocol !== "string") {
       return res
         .status(400)
@@ -176,12 +176,18 @@ const getCasesByStatus = async (req, res) => {
 };
 
 const getCasesByDate = async (req, res) => {
-  if (!req.body) {
+  const page = req.query.page - 1;
+  if (page < 0) {
+    return res.status(400).json({ message: "Página inválida!" });
+  }
+
+  const date = req.query.date;
+  if (!date) {
     return res.status(400).json({ message: "É necessário informar a data." });
   }
 
   try {
-    const result = await caseService.getCasesByDate(req.body.date);
+    const result = await caseService.getCasesByDate(date, page);
     const validated = caseDTO.caseListDTO.parse(result);
     return res.status(200).json(validated);
   } catch (error) {

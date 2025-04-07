@@ -13,24 +13,26 @@ router.post(
 
 // lista todos os casos paginados
 router.get(
-  "/all/:page?",
+  "/search/all",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   caseController.getAllCases
 );
 
+//busca todos os casos q o usuario logado a envolvido
 router.get(
-  "/mycases/:page?",
+  "/search/mycases",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   caseController.getCasesByInUser
 );
 
+// busca caso por cpf de usuario
 router.get(
-  "/search/user/:cpf/:page?",
+  "/search/byuser",
   validateToken(["ADMIN"]),
   caseController.getCasesByCpfUser
 );
 
-// busca caso por por protocol.
+// busca 1 caso por protocol. (não usa esse por enquanto)
 router.get(
   "/search/protocol",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
@@ -39,11 +41,12 @@ router.get(
 
 // lista casos por status
 router.get(
-  "/search/:status?/:page?",
+  "/search/status",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
   caseController.getCasesByStatus
 );
 
+// lista casos por data de criacao
 router.get(
   "/search/date",
   validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
@@ -52,13 +55,13 @@ router.get(
 
 // atualiza status do caso
 router.patch(
-  "/status/:protocol?",
+  "/edit/status/protocol",
   validateToken(["ADMIN", "PERITO"]),
   caseController.updateStatusCaseByProtocol
 );
 
 router.put(
-  "/data/:protocol?",
+  "/data/protocol",
   validateToken(["ADMIN", "PERITO"]),
   caseController.updateDataCase
 );

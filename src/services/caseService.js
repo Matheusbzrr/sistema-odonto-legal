@@ -87,8 +87,11 @@ const getCasesByStatus = async (status, page) => {
   return cases;
 };
 
-const getCasesByDate = async (date) => {
-  const filterDate = await caseRepository.getCaseByDate(date);
+const getCasesByDate = async (date, page) => {
+  const limit = 10;
+  const offset = page * limit;
+
+  const filterDate = await caseRepository.getCaseByDate(date, offset, limit);
   if (!filterDate) {
     throw { status: 404, message: "Nenhum caso encontrado nessa data!" };
   }
