@@ -7,7 +7,7 @@ const createEvidence = async (req, res) => {
     return res.status(400).json({ message: "Verifique os dados informados!" });
   }
 
-  if (!req.params) {
+  if (!req.req.query.protocol) {
     return res.status(400).json({ message: "Informe o protocolo do caso!" });
   }
 
