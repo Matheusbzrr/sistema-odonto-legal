@@ -7,13 +7,13 @@ const createEvidence = async (req, res) => {
     return res.status(400).json({ message: "Verifique os dados informados!" });
   }
 
-  if (!req.req.query.protocol) {
+  if (!req.query.protocol) {
     return res.status(400).json({ message: "Informe o protocolo do caso!" });
   }
 
   try {
     const validated = evidenceDTO.createEvidenceDTO.parse(req.body);
-    await evidenceService.createEvidence(req.userId, validated, req.params.protocol);
+    await evidenceService.createEvidence(req.userId, validated, req.query.protocol);
     return res.status(201).json("Evidencia adicionada no caso com sucesso!");
   } catch (error) {
     if (error instanceof z.ZodError) {
