@@ -21,9 +21,7 @@ const patientSchema = new mongoose.Schema(
       type: String,
       enum: ["IDENTIFICADO", "NÃO IDENTIFICADO", "PARCIALMENTE IDENTIFICADO"],
     },
-    dentalHistory: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "DentalHistory" },
-    ],
+    genero: {type: String},
     idCase: { type: mongoose.Schema.Types.ObjectId, ref: "Case" },
   },
   { timestamps: true }

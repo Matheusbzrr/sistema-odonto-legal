@@ -38,7 +38,7 @@ const getCasesByCpfUser = async (offSet, limit, cpf) => {
   const cases = await Case.find()
     .populate("openedBy", "name role")
     .populate({
-      path: "involved",
+      path: "professional",
       select: "name role",
       match: { cpf },
     })
@@ -71,7 +71,7 @@ const getCasesByStatus = async (status, offSet, limit) => {
 const getCaseByProtocol = async (protocol) => {
   return await Case.findOne({ protocol })
     .populate("openedBy", "name role")
-    .populate("involved", "name role")
+    .populate("professional", "name role")
     .populate({
       path: "evidence",
       populate: {

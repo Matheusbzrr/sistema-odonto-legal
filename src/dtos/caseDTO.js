@@ -12,68 +12,71 @@ const locationDTO = z
   })
   .optional();
 
+const questionDTO = z.object({
+  question: z.string().min(1, "A pergunta não pode estar vazia."),
+});
+
+const caseTypeDTO = z.enum([
+  "COLETA DNA",
+  "EXAME MARCA DE MORDIDA",
+  "IDENTIFICAÇÃO DE VÍTIMA",
+  "LESÕES CORPORAIS",
+]);
+
 const caseCreateDTO = z
   .object({
     nic: z.string().min(1, "NIC é obrigatório."),
     title: z.string().min(3, "O título deve ter pelo menos 3 caracteres."),
-    inquiryNumber: z.string().optional(),
-    BO: z.string().optional(),
-    caseType: z.enum([
-      "ACIDENTE",
-      "IDENTIFICAÇÃO DE VÍTIMA",
-      "EXAME CRIMINAL",
-      "MORDIDA",
-      "AVALIAÇÃO DE LESÕES",
-      "FRAUDE ODONTOLÓGICA",
-      "DIREITOS HUMANOS",
-    ]),
+    inquiryNumber: z.string(),
+    caseType: caseTypeDTO,
     observations: z.string().optional(),
     location: locationDTO.optional(),
-    involved: z.array(z.string()).optional(), // Lista de IDs de usuários envolvidos
+    professional: z.array(z.string()).optional(),
+    requestingInstitution: z.string().min(1, "Instituição é obrigatória."),
+    requestingAuthority: z.string().min(1, "Autoridade é obrigatória."),
+    questions: z
+      .array(questionDTO)
+      .min(1, "É necessário informar pelo menos uma pergunta."),
   })
   .strict();
 
-//DTO para resposta de caso único
+// base de resposta
 const caseResponseDTO = z.object({
   protocol: z.string(),
   patient: z.any(),
   title: z.string(),
   status: z.enum(["ABERTO", "FINALIZADO", "ARQUIVADO"]),
-  openedAt: z.date(), // mudei para data pois no banco ta salvo como data direto
+  openedAt: z.date(), 
   closedAt: z
     .any()
     .optional()
     .transform((value) => (value === null ? undefined : value)),
 
-  caseType: z.enum([
-    "ACIDENTE",
-    "IDENTIFICAÇÃO DE VÍTIMA",
-    "EXAME CRIMINAL",
-    "MORDIDA",
-    "AVALIAÇÃO DE LESÕES",
-    "FRAUDE ODONTOLÓGICA",
-    "DIREITOS HUMANOS",
-  ]),
+  caseType: caseTypeDTO,
   evidence: z.array(z.any()).optional(),
 });
 
 const caseResponseDetailsDTO = z.object({
   ...caseResponseDTO.shape,
-  inquiryNumber: z.string().optional(),
-  BO: z.string().optional(),
+  inquiryNumber: z.string(),
   observations: z.string().optional(),
   location: locationDTO.optional(),
   openedBy: z.any(),
-  involved: z.array(z.any()).optional(),
+  professional: z.array(z.any()).optional(),
+  requestingInstitution: z.string(),
+  requestingAuthority: z.string(),
+  questions: z.array(questionDTO),
 });
 
 const caseListDTO = z.array(
   caseResponseDTO.omit({
-    BO: true,
+    requestingInstitution: true,
+    requestingAuthority: true,
+    questions: true,
     inquiryNumber: true,
     openedBy: true,
     observations: true,
-    involved: true,
+    professional: true,
     location: true,
   })
 );
@@ -86,23 +89,9 @@ const caseUpdateStatusDTO = z.object({
 const caseUpdateDataDTO = z
   .object({
     title: z.string().optional(),
-    inquiryNumber: z.string().optional(),
-    BO: z.string().optional(),
     observations: z.string().optional(),
     location: locationDTO.optional(),
-    caseType: z
-      .enum([
-        "ACIDENTE",
-        "IDENTIFICAÇÃO DE VÍTIMA",
-        "EXAME CRIMINAL",
-        "MORDIDA",
-        "AVALIAÇÃO DE LESÕES",
-        "FRAUDE ODONTOLÓGICA",
-        "DIREITOS HUMANOS",
-      ])
-      .optional(),
-    involved: z.array(z.string()).optional(), // Lista de IDs de usuários envolvidos
-    evidence: z.array(z.string()).optional(),
+    professional: z.array(z.string()).optional(), 
   })
   .strict();
 

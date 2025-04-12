@@ -28,13 +28,13 @@ const createEvidence = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
+// avaliar excluir
 const getAllEvidencesInCase = async (req, res) => {
-  const page = req.params.page - 1;
+  const page = req.query.page - 1;
   if (page < 0) {
     return res.status(400).json({ message: "Página inválida!" });
   }
-  const protocol = req.body.protocol;
+  const protocol = req.query.protocol;
   if (!protocol || typeof protocol !== "string") {
     return res
       .status(400)
@@ -58,9 +58,9 @@ const getAllEvidencesInCase = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
+// avaliar excluir
 const getEvidenceById = async (req, res) => {
-  const evidenceId = req.params.evidenceId;
+  const evidenceId = req.query.evidenceId;
   if (!evidenceId) {
     return res
       .status(400)
@@ -86,7 +86,7 @@ const getEvidenceById = async (req, res) => {
 };
 
 const updateEvidence = async (req, res) => {
-  const evidenceId = req.params.evidenceId;
+  const evidenceId = req.query.evidenceId;
   if (!evidenceId) {
     return res
       .status(400)

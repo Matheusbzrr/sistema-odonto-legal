@@ -206,7 +206,7 @@ const getCasesByDate = async (req, res) => {
 
 // atualiza o status de um caso
 const updateStatusCaseByProtocol = async (req, res) => {
-  if (!req.params.protocol) {
+  if (!req.query.protocol) {
     return res
       .status(400)
       .json({ message: "É obrigatório passar protocol do caso !" });
@@ -222,7 +222,7 @@ const updateStatusCaseByProtocol = async (req, res) => {
     const validated = caseDTO.caseUpdateStatusDTO.parse(req.body);
     await caseService.updateCaseStatus(
       req.userId,
-      req.params.protocol,
+      req.query.protocol,
       validated.status
     );
     return res.status(204).json();
@@ -241,7 +241,7 @@ const updateStatusCaseByProtocol = async (req, res) => {
 };
 
 const updateDataCase = async (req, res) => {
-  if (!req.params.protocol) {
+  if (!req.query.protocol) {
     return res.status(404).json({ message: "Caso não encontrado" });
   }
 
@@ -254,7 +254,7 @@ const updateDataCase = async (req, res) => {
     const result = await caseService.updateCaseData(
       validated,
       req.userId,
-      req.params.protocol
+      req.query.protocol
     );
     res.status(204).json(result);
   } catch (error) {

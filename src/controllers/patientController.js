@@ -27,7 +27,7 @@ const createPatient = async (req, res) => {
 };
 
 const getAllPatients = async (req, res) => {
-  const page = req.params.page - 1;
+  const page = req.query.page - 1;
   if (page < 0) {
     return res.status(400).json({ message: "Página inválida!" });
   }
@@ -50,12 +50,12 @@ const getAllPatients = async (req, res) => {
 };
 
 const getPatient = async (req, res) => {
-  if (!req.params.nic) {
+  if (!req.query.nic) {
     return res.status(404).json({ message: "Paciente não encontrado" });
   }
 
   try {
-    const patient = await patienteService.getPatientByNic(req.params.nic);
+    const patient = await patienteService.getPatientByNic(req.query.nic);
     const validate = patienteDTO.responsePatienteDTO.parse(patient);
     return res.json(validate);
   } catch (error) {
@@ -73,7 +73,7 @@ const getPatient = async (req, res) => {
 };
 
 const updatePatient = async (req, res) => {
-  if (!req.params.nic) {
+  if (!req.query.nic) {
     return res.status(404).json({ message: "Paciente não informado" });
   }
   if (!req.body) {
@@ -81,7 +81,7 @@ const updatePatient = async (req, res) => {
   }
   try {
     const validated = patienteDTO.updatePatientSchema.parse(req.body);
-    await patienteService.updatePatient(req.params.nic, validated);
+    await patienteService.updatePatient(req.query.nic, validated);
     return res.status(200).json("Paciente atualizado com sucesso!");
   } catch (error) {
     if (error instanceof z.ZodError) {

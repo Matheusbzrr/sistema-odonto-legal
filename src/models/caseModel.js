@@ -11,6 +11,13 @@ const LocationSchema = new mongoose.Schema({
   complement: { type: String },
 });
 
+const QuestionSchema = new mongoose.Schema({
+  question: {
+    type: String,
+    required: true
+  }
+});
+
 // esquema para o caso
 const caseSchema = new mongoose.Schema(
   {
@@ -29,18 +36,21 @@ const caseSchema = new mongoose.Schema(
     },
     openedAt: { type: Date, default: Date.now },
     closedAt: { type: Date },
+    requestingInstitution: {
+      type: String,
+    },
+    requestingAuthority: {
+      type: String,
+    },
     inquiryNumber: { type: String },
-    BO: { type: String },
+    questions: [QuestionSchema],
     caseType: {
       type: String,
       enum: [
-        "ACIDENTE",
+        "COLETA DNA",
+        "EXAME MARCA DE MORDIDA",
         "IDENTIFICAÇÃO DE VÍTIMA",
-        "EXAME CRIMINAL",
-        "MORDIDA",
-        "AVALIAÇÃO DE LESÕES",
-        "FRAUDE ODONTOLÓGICA",
-        "DIREITOS HUMANOS",
+        "LESÕES CORPORAIS",
       ],
       required: true,
     },
@@ -51,7 +61,7 @@ const caseSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    involved: [
+    professional: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -88,12 +98,9 @@ caseSchema.pre("findOneAndUpdate", async function (next) {
 
   const fieldsToTrack = [
     "title",
-    "status",
-    "inquiryNumber",
-    "BO",
     "observations",
     "location",
-    "involved",
+    "professional",
     "evidence",
   ];
 

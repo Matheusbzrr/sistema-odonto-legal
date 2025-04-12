@@ -56,12 +56,12 @@ const loginUser = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-  if (req.params.page < 1) {
+  if (req.query.page < 1) {
     return res.status(422).json({ message: "Página inválida!" });
   }
 
   try {
-    const users = await userService.getAll(req.params.page);
+    const users = await userService.getAll(req.query.page);
     const resUsersDTO = userDTO.listUsersResponseWithAddressDTO.parse(users);
     return res.status(200).json(resUsersDTO);
   } catch (error) {
@@ -114,11 +114,11 @@ const getProfileUser = async (req, res) => {
 };
 
 const getUser = async (req, res) => {
-  if (!req.body) {
+  if (!req.query.cpf) {
     return res.status(422).json({ message: "Informe um cpf para pesquisar!" });
   }
   try {
-    const userReq = req.body.cpf;
+    const userReq = req.query.cpf;
     if (typeof userReq !== "string" || userReq.length != 11) {
       return res
         .status(422)
@@ -165,7 +165,7 @@ const updatePassword = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   const data = req.body;
-  const userToBeEditaded = req.params.id;
+  const userToBeEditaded = req.query.id;
 
   if (!data) {
     return res.status(422).json({ message: "Dados obrigatórios inválidos!" });

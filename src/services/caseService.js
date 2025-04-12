@@ -1,5 +1,4 @@
 const caseRepository = require("../repositories/caseRepository");
-const notificationService = require("./notificationService");
 const patientService = require("./patientService");
 const { v4: uuidv4 } = require("uuid");
 // cria novo caso
