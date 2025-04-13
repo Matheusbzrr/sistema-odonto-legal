@@ -6,7 +6,7 @@ const createReport = async (req, res) => {
   }
 
   if (!req.query.evidence) {
-    return res.status(400).json({ message: "Informe o protocolo do caso!" });
+    return res.status(400).json({ message: "Informe a evidencia do caso!" });
   }
 
   try {

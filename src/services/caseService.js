@@ -177,7 +177,7 @@ const deleteCase = async (protocol) => {
     };
   }
 
-  if (foundCase.evidence) {
+  if (foundCase.evidence.length > 0) {
     throw {
       status: 403,
       message: "Não é possível deletar um caso com evidências cadastradas!",
