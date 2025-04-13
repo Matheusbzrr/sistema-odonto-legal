@@ -82,6 +82,10 @@ const getCaseByProtocol = async (protocol) => {
         {
           path: "reportEvidence",
           select: "note descriptionTechnical",
+          populate: {
+            path: "responsible",
+            select: "name role",
+          },
         },
       ],
     })

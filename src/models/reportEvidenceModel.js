@@ -10,6 +10,11 @@ const evidenceReportSchema = new mongoose.Schema(
     },
     note: { type: String },
     descriptionTechnical: { type: String, required: true },
+    responsible: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );

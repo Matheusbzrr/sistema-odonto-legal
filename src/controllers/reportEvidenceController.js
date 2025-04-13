@@ -12,6 +12,7 @@ const createReport = async (req, res) => {
   try {
     const data = {
     evidence: req.query.evidence,
+    responsible: req.userId,
       ...req.body,
     };
     await reportEvidenceService.createReport(data);
