@@ -73,6 +73,7 @@ const caseSchema = new mongoose.Schema(
         ref: "Evidence",
       },
     ],
+    
     history: [
       {
         field: { type: String, required: true },

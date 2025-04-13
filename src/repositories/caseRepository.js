@@ -74,10 +74,16 @@ const getCaseByProtocol = async (protocol) => {
     .populate("professional", "name role")
     .populate({
       path: "evidence",
-      populate: {
-        path: "collector",
-        select: "name role",
-      },
+      populate: [
+        {
+          path: "collector",
+          select: "name role",
+        },
+        {
+          path: "reportEvidence",
+          select: "note descriptionTechnical",
+        },
+      ],
     })
     .populate("patient");
 };
@@ -138,6 +144,14 @@ const updateCaseData = async (data, userId, protocol) => {
   );
 };
 
+const deleteCase = async (protocol) => {
+  const deletedCase = await Case.findOneAndDelete({ protocol });
+  if (!deletedCase) {
+    throw { status: 404, message: "Caso não encontrado!" };
+  }
+  return deletedCase;
+};
+
 module.exports = {
   createCase,
   getCasesByPatients,
@@ -149,4 +163,5 @@ module.exports = {
   getCaseByDate,
   updateCaseStatus,
   updateCaseData,
+  deleteCase,
 };

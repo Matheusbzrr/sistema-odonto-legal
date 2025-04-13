@@ -7,6 +7,7 @@ const patientRoutes = require("./src/routes/patienteRoute");
 const userRoutes = require("./src/routes/userRoute");
 const caseRoutes = require("./src/routes/caseRoute");
 const evidenceRoutes = require("./src/routes/evidenceRoute");
+const reportEvidenceRoutes = require("./src/routes/reportEvidenceRoute");
 
 
 const corsOptions = {
@@ -23,6 +24,8 @@ app.use("/api", userRoutes);
 app.use("/api/patient", patientRoutes);
 app.use("/api/cases", caseRoutes);
 app.use("/api/evidence", evidenceRoutes);
+app.use("/api/report", reportEvidenceRoutes);
+
 
 
 app.get("/home", (req, res) => {

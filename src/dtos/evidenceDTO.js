@@ -12,13 +12,11 @@ const evidenceConditionEnum = z.enum([
 ]);
 
 const evidenceCategoryEnum = z.enum([
-  "DENTAL",
   "RADIOGRAFICA",
   "FOTOGRAFICA",
   "DOCUMENTAL",
   "BIOLOGICA",
   "LESIONAL",
-  "DIGITAL",
 ]);
 
 const createEvidenceDTO = z
@@ -31,7 +29,7 @@ const createEvidenceDTO = z
     latitude: z.number().optional(),
     longitude: z.number().optional(),
     obs: z.string().optional(),
-    category: evidenceCategoryEnum.optional(),
+    category: evidenceCategoryEnum,
   })
   .strict();
 

@@ -271,6 +271,22 @@ const updateDataCase = async (req, res) => {
   }
 };
 
+const deleteCase = async (req, res) => {
+  if (!req.query.protocol) {
+    return res.status(404).json({ message: "Caso não encontrado" });
+  }
+
+  try {
+    await caseService.deleteCase(req.query.protocol);
+    res.status(204).json();
+  } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createCase,
   getAllCases,
@@ -281,4 +297,5 @@ module.exports = {
   getCasesByDate,
   updateStatusCaseByProtocol,
   updateDataCase,
+  deleteCase
 };

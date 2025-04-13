@@ -66,4 +66,10 @@ router.put(
   caseController.updateDataCase
 );
 
+router.delete(
+  "/delete/protocol",
+  validateToken(["ADMIN", "PERITO"]),
+  caseController.deleteCase
+);
+
 module.exports = router;

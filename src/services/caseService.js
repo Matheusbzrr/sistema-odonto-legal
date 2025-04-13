@@ -163,6 +163,31 @@ const updateCaseData = async (data, userId, protocol) => {
   return updatedCase;
 };
 
+const deleteCase = async (protocol) => {
+  const foundCase = await caseRepository.getCaseByProtocol(protocol);
+  if (!foundCase) {
+    throw { status: 404, message: "Caso não encontrado!" };
+  }
+
+  if (foundCase.status === "FINALIZADO" || foundCase.status === "ARQUIVADO") {
+    throw {
+      status: 403,
+      message:
+        "Não é possível deletar um caso finalizado ou arquivado! Solicite uma reabertura para realizar modificações.",
+    };
+  }
+
+  if (foundCase.evidence) {
+    throw {
+      status: 403,
+      message: "Não é possível deletar um caso com evidências cadastradas!",
+    };
+  }
+
+  await caseRepository.deleteCase(protocol);
+  return { message: "Caso deletado com sucesso!" };
+};
+
 module.exports = {
   createCase,
   getAllCases,
@@ -173,4 +198,5 @@ module.exports = {
   getCasesByDate,
   updateCaseStatus,
   updateCaseData,
+  deleteCase,
 };
