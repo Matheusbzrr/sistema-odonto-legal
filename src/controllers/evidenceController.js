@@ -28,36 +28,7 @@ const createEvidence = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-// avaliar excluir
-const getAllEvidencesInCase = async (req, res) => {
-  const page = req.query.page - 1;
-  if (page < 0) {
-    return res.status(400).json({ message: "Página inválida!" });
-  }
-  const protocol = req.query.protocol;
-  if (!protocol || typeof protocol !== "string") {
-    return res
-      .status(400)
-      .json({ message: "É necessário informar corretamente protocolo do caso." });
-  }
 
-  try {
-    const result = await evidenceService.getAllEvidencesInCase(page, protocol);
-    const validated = evidenceDTO.listEvidenceResponseDTO.parse(result);
-    return res.status(200).json(validated);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        message: "Erro de validação dos dados",
-        errors: error.errors,
-      });
-    }
-    if (error.status) {
-      return res.status(error.status).json({ message: error.message });
-    }
-    return res.status(500).json({ message: error.message });
-  }
-};
 // avaliar excluir
 const getEvidenceById = async (req, res) => {
   const evidenceId = req.query.evidenceId;
@@ -116,7 +87,6 @@ const updateEvidence = async (req, res) => {
 
 module.exports = {
   createEvidence,
-  getAllEvidencesInCase,
   getEvidenceById,
   updateEvidence,
 };

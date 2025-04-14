@@ -49,6 +49,7 @@ const responseEvidence = z.object({
   createdAt: z.any(),
   updatedAt: z.any(),
   deletedAt: z.date().optional(),
+  reportEvidence: z.any().optional(),
 });
 
 const updateEvidenceDTO = createEvidenceDTO.partial();

@@ -10,11 +10,7 @@ router.post(
   evidenceController.createEvidence
 );
 
-router.get(
-  "/all/:page?",
-  validateToken(["ADMIN", "PERITO", "ASSISTENTE"]),
-  evidenceController.getAllEvidencesInCase
-);
+
 
 router.get(
   "/search/:evidenceId?",

@@ -16,6 +16,15 @@ const getAllEvidencesInCase = async (offset, limit, idCase) => {
 const getEvidenceById = async (id) => {
   return await Evidence.findById(id)
     .populate("collector", " name role cpf")
+    .populate({
+      path: "reportEvidence",
+      populate: [
+        {
+          path: "responsible",
+          select: "name role",
+        },
+      ],
+    })
     .sort({ createdAt: -1 });
 };
 
