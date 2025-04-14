@@ -6,6 +6,10 @@ const createCase = async (data, userId, patient, protocol) => {
   return await newCase.save();
 };
 
+const getCaseById = async(id) => {
+  return await Case.findById(id);
+}
+
 const getCasesByPatients = async (patient) => {
   return await Case.find({ patient });
 };
@@ -70,6 +74,13 @@ const getCasesByStatus = async (status, offSet, limit) => {
 // busca pelo protocol e detalha as evidencias
 const getCaseByProtocol = async (protocol) => {
   return await Case.findOne({ protocol })
+  .populate({
+    path: "caseReport",
+    populate: {
+      path: "responsible",
+      select: "name role"
+    }
+  })
     .populate("openedBy", "name role")
     .populate("professional", "name role")
     .populate({
@@ -158,6 +169,7 @@ const deleteCase = async (protocol) => {
 
 module.exports = {
   createCase,
+  getCaseById,
   getCasesByPatients,
   getAllCases,
   getCasesByInUser,

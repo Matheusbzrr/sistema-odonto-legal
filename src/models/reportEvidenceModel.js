@@ -24,7 +24,7 @@ evidenceReportSchema.pre("save", async function (next) {
     if (this.evidence) {
       await mongoose.model("Evidence").findByIdAndUpdate(
         this.evidence,
-        { $set: { reportEvidence: this._id } }, // 👈 Atualiza diretamente o campo único
+        { $set: { reportEvidence: this._id } }, 
         { new: true }
       );
     }

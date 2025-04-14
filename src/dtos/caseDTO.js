@@ -42,6 +42,7 @@ const caseCreateDTO = z
 
 // base de resposta
 const caseResponseDTO = z.object({
+  id: z.any(),
   protocol: z.string(),
   patient: z.any(),
   title: z.string(),
@@ -58,6 +59,7 @@ const caseResponseDTO = z.object({
 
 const caseResponseDetailsDTO = z.object({
   ...caseResponseDTO.shape,
+  caseReport: z.any(),
   inquiryNumber: z.string(),
   observations: z.string().optional(),
   location: locationDTO.optional(),

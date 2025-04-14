@@ -21,6 +21,11 @@ const QuestionSchema = new mongoose.Schema({
 // esquema para o caso
 const caseSchema = new mongoose.Schema(
   {
+    caseReport: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CaseReport",
+      required: true,
+    },
     protocol: { type: String, required: true, unique: true },
     patient: {
       type: mongoose.Schema.Types.ObjectId,
