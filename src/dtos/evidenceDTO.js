@@ -26,8 +26,8 @@ const createEvidenceDTO = z
     descriptionTechnical: z.string().min(1, "Description is required"),
     condition: evidenceConditionEnum,
     photo: z.string().optional(),
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
+    latitude: z.any().optional(),
+    longitude: z.any().optional(),
     obs: z.string().optional(),
     category: evidenceCategoryEnum,
   })
