@@ -21,7 +21,11 @@ const patientSchema = new mongoose.Schema(
       type: String,
       enum: ["IDENTIFICADO", "NÃO IDENTIFICADO", "PARCIALMENTE IDENTIFICADO"],
     },
-    genero: {type: String},
+    gender: {
+      type: String,
+      enum: ["MASCULINO", "FEMININO", "NAO-BINARIO", "OUTRO"],
+    },
+
     idCase: { type: mongoose.Schema.Types.ObjectId, ref: "Case" },
   },
   { timestamps: true }

@@ -19,9 +19,7 @@ const addressCreateDTO = z.object({
 const userCreateDTO = z
   .object({
     name: z.string().min(2, "O nome deve ter pelo menos 2 caracteres."),
-    lastName: z
-      .string()
-      .min(2, "O sobrenome deve ter pelo menos 2 caracteres."),
+    lastName: z.string().optional(),
     email: z.string().email("E-mail inválido."),
     password: z.string().min(6, "A senha deve ter pelo menos 6 caracteres."),
     role: z.enum(["ADMIN", "PERITO", "ASSISTENTE"]),
@@ -58,7 +56,7 @@ const userLoginDTO = z
 const userResponseWithAddressDTO = z.object({
   id: z.string(),
   name: z.string(),
-  lastName: z.string(),
+  lastName: z.string().optional(),
   email: z.string(),
   role: z.string(),
   cpf: z.string(),

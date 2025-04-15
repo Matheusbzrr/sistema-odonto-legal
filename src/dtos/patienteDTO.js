@@ -15,6 +15,7 @@ const createPatientSchema = z.object({
   name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres."),
   age: z.number().optional(),
   cpf: z.string().optional(),
+  gender: z.enum(["MASCULINO", "FEMININO", "NAO-BINARIO", "OUTRO"]).optional(),
   address: AddressSchema.optional(),
   identificationStatus: z.enum([
     "IDENTIFICADO",
@@ -28,6 +29,7 @@ const responsePatienteDTO = z.object({
   name: z.string(),
   age: z.number().optional(),
   cpf: z.string().optional(),
+  gender: z.enum(["MASCULINO", "FEMININO", "NAO-BINARIO", "OUTRO"]).optional(),
   address: AddressSchema.optional(),
   identificationStatus: z.enum([
     "IDENTIFICADO",
