@@ -14,8 +14,8 @@ const LocationSchema = new mongoose.Schema({
 const QuestionSchema = new mongoose.Schema({
   question: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 // esquema para o caso
@@ -24,7 +24,6 @@ const caseSchema = new mongoose.Schema(
     caseReport: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CaseReport",
-      required: true,
     },
     protocol: { type: String, required: true, unique: true },
     patient: {
@@ -78,7 +77,7 @@ const caseSchema = new mongoose.Schema(
         ref: "Evidence",
       },
     ],
-    
+
     history: [
       {
         field: { type: String, required: true },
