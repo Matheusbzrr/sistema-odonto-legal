@@ -5,7 +5,6 @@ const evidenceSchema = new mongoose.Schema(
     reportEvidence: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "EvidenceReport",
-      unique: true,
     },
     title: { type: String, required: true },
     testimony: { type: String },
