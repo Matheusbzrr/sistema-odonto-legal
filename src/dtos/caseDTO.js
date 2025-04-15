@@ -59,7 +59,7 @@ const caseResponseDTO = z.object({
 
 const caseResponseDetailsDTO = z.object({
   ...caseResponseDTO.shape,
-  evidenceReport: z.any(),
+  caseReport: z.any(),
   inquiryNumber: z.string(),
   observations: z.string().optional(),
   location: locationDTO.optional(),
