@@ -41,7 +41,7 @@ const responsePatienteDTO = z.object({
 
 const patienteList = z.array(responsePatienteDTO);
 
-const updatePatientSchema = createPatientSchema.partial();
+const updatePatientSchema = createPatientSchema.omit({ nic: true }).partial();
 
 module.exports = {
   createPatientSchema,

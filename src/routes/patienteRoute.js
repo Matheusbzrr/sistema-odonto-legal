@@ -29,7 +29,7 @@ router.put(
 );
 
 router.put(
-  "/update/:nic?",
+  "/update",
   validateToken(["ADMIN", "PERITO"]),
   patientController.updatePatient
 );
