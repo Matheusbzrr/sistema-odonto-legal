@@ -8,12 +8,11 @@ const userRoutes = require("./src/routes/userRoute");
 const caseRoutes = require("./src/routes/caseRoute");
 const evidenceRoutes = require("./src/routes/evidenceRoute");
 const reportEvidenceRoutes = require("./src/routes/reportEvidenceRoute");
-const caseReportEvidenceRoutes = require("./src/routes/caseReportRoute")
-
+const caseReportEvidenceRoutes = require("./src/routes/caseReportRoute");
 
 const corsOptions = {
   origin: "*",
-  methods: "GET,POST,PUT,DELETE",
+  methods: "GET,POST,PUT,DELETE,PATCH",
   allowedHeaders: "Content-Type, Authorization",
 };
 
@@ -26,9 +25,7 @@ app.use("/api/patient", patientRoutes);
 app.use("/api/cases", caseRoutes);
 app.use("/api/evidence", evidenceRoutes);
 app.use("/api/report", reportEvidenceRoutes);
-app.use("/api/case/report", caseReportEvidenceRoutes)
-
-
+app.use("/api/case/report", caseReportEvidenceRoutes);
 
 app.get("/home", (req, res) => {
   res.status(200).json({ msg: "Bem-vindo à API!" });
