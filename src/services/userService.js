@@ -91,6 +91,14 @@ const updatePasswordUser = async (data) => {
   await userRepository.updateProfile(user._id, data);
 };
 
+const deleteUser = async (id) => {
+  const user = await userRepository.getUserById(id);
+  if (!user) {
+    throw { status: 404, message: "Usuário não encontrado!" };
+  }
+  await userRepository.deleteUser(user._id);
+  return { message: "Usuário deletado com sucesso!" };
+};
 module.exports = {
   registerUser,
   loginUser,
@@ -99,5 +107,6 @@ module.exports = {
   getUserByCPF,
   getUserById,
   updateProfile,
-  updatePasswordUser
+  updatePasswordUser,
+  deleteUser
 };

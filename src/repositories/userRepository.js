@@ -46,6 +46,10 @@ const updateUserAddress = async (userId, newAddress) => {
   );
 };
 
+const deleteUser = async (id) => {
+  return await User.findByIdAndDelete(id);
+}
+
 module.exports = {
   create,
   getAllUsers,
@@ -55,4 +59,5 @@ module.exports = {
   getUserByEmail,
   updateProfile,
   updateUserAddress,
+  deleteUser
 };

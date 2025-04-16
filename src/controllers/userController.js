@@ -191,6 +191,22 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  const userId = req.query.id;
+  if (!userId) {
+    return res.status(422).json({ message: "Informe um id para deletar!" });
+  }
+  try {
+    await userService.deleteUser(userId);
+    return res.status(200).json({ message: "Usuário deletado com sucesso!" });
+  } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    return res.status(500).json({ message: error.message });
+  }
+}
+
 module.exports = {
   createUser,
   loginUser,
@@ -200,4 +216,5 @@ module.exports = {
   getProfileUser,
   updatePassword,
   updateProfile,
+  deleteUser
 };

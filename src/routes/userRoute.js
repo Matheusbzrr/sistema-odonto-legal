@@ -35,4 +35,10 @@ router.put(
   validateToken(["ADMIN"]),
   userController.updateProfile
 );
+
+router.delete(
+  "/user/delete",
+  validateToken(["ADMIN"]),
+  userController.deleteUser
+);
 module.exports = router;
