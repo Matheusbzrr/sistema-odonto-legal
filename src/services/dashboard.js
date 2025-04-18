@@ -5,4 +5,9 @@ const getCasesAndDistrict = async () => {
   return counts;
 };
 
-module.exports = { getCasesAndDistrict };
+const getCasesByDate = async () => {
+    const counts = await dashRepository.getCasesAndDate();
+    return counts;
+}
+
+module.exports = { getCasesAndDistrict, getCasesByDate };

@@ -10,5 +10,6 @@ router.get(
   dashController.getCasesAndDistrict
 );
 
+router.get("/cases/date", dashController.getCasesByDate);
 
 module.exports = router;

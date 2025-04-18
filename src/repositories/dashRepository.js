@@ -19,7 +19,28 @@ const getCasesAndDistrict = async () => {
         casos: 1,
       },
     },
-    
   ]);
 };
-module.exports = { getCasesAndDistrict };
+
+const getCasesAndDate = async () => {
+  return Case.aggregate([
+    // extrai só o mês de createdAt (1 = Janeiro, …, 12 = Dezembro)
+    {
+      $group: {
+        _id: { $month: "$createdAt" },
+        casos: { $sum: 1 },
+      },
+    },
+    // projeta { month: 1–12, count }
+    {
+      $project: {
+        _id: 0,
+        mes: "$_id",
+        casos: 1,
+      },
+    },
+    // ordena de Jan (1) até Dez (12)
+    { $sort: { month: 1 } },
+  ]);
+};
+module.exports = { getCasesAndDistrict, getCasesAndDate };
