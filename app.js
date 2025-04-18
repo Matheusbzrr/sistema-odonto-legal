@@ -9,6 +9,7 @@ const caseRoutes = require("./src/routes/caseRoute");
 const evidenceRoutes = require("./src/routes/evidenceRoute");
 const reportEvidenceRoutes = require("./src/routes/reportEvidenceRoute");
 const caseReportEvidenceRoutes = require("./src/routes/caseReportRoute");
+const dashRoutes = require("./src/routes/dashRoute");
 
 const corsOptions = {
   origin: "*",
@@ -26,6 +27,7 @@ app.use("/api/cases", caseRoutes);
 app.use("/api/evidence", evidenceRoutes);
 app.use("/api/report", reportEvidenceRoutes);
 app.use("/api/case/report", caseReportEvidenceRoutes);
+app.use("/api/dash", dashRoutes);
 
 app.get("/home", (req, res) => {
   res.status(200).json({ msg: "Bem-vindo à API!" });
