@@ -43,4 +43,12 @@ const getCasesAndDate = async () => {
     { $sort: { month: 1 } },
   ]);
 };
-module.exports = { getCasesAndDistrict, getCasesAndDate };
+
+const getCasesByStatus = async () => {
+  return Case.aggregate([
+    { $group: { _id: "$status", casos: { $sum: 1 } } },
+    { $project: { _id: 0, status: "$_id", casos: 1 } },
+  ]);
+};
+
+module.exports = { getCasesAndDistrict, getCasesAndDate, getCasesByStatus };

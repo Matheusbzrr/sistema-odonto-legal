@@ -12,4 +12,6 @@ router.get(
 
 router.get("/cases/date", dashController.getCasesByDate);
 
+router.get("/cases/status", dashController.getCasesByStatus);
+
 module.exports = router;
