@@ -15,4 +15,9 @@ const getCasesByStatus = async () => {
     return counts;
 }
 
-module.exports = { getCasesAndDistrict, getCasesByDate, getCasesByStatus };
+const getVitimsByStatusOfIdentification = async () => {
+    const counts = await dashRepository.getVitimsByStatusOfIdentification();
+    return counts;
+}
+
+module.exports = { getCasesAndDistrict, getCasesByDate, getCasesByStatus, getVitimsByStatusOfIdentification };

@@ -74,7 +74,12 @@ const userResponseWithAddressDTO = z.object({
 
 const listUsersResponseWithAddressDTO = z.array(userResponseWithAddressDTO);
 
-const updateDTO = userCreateDTO.partial();
+const updateDTO = userCreateDTO
+  .partial() 
+  .extend({
+    
+    id: z.string(),
+  });
 module.exports = {
   validEnumDTO,
   addressCreateDTO,

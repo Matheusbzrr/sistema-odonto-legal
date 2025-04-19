@@ -1,7 +1,4 @@
-const CaseReport = require("../models/caseReport");
 const Case = require("../models/caseModel");
-const ReportEvidence = require("../models/reportEvidenceModel");
-const Evidence = require("../models/evidenceModel");
 const Patient = require("../models/patientModel");
 
 const getCasesAndDistrict = async () => {
@@ -51,4 +48,11 @@ const getCasesByStatus = async () => {
   ]);
 };
 
-module.exports = { getCasesAndDistrict, getCasesAndDate, getCasesByStatus };
+const getVitimsByStatusOfIdentification = async () => {
+  return Patient.aggregate([
+    { $group: { _id: "$identificationStatus", vitimas: { $sum: 1 } } },
+    { $project: { _id: 0, status: "$_id", vitimas: 1 } },
+  ]);
+}
+
+module.exports = { getCasesAndDistrict, getCasesAndDate, getCasesByStatus, getVitimsByStatusOfIdentification };
