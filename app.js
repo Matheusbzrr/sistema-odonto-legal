@@ -2,14 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
-// rotas
-const patientRoutes = require("./src/routes/patienteRoute");
-const userRoutes = require("./src/routes/userRoute");
-const caseRoutes = require("./src/routes/caseRoute");
-const evidenceRoutes = require("./src/routes/evidenceRoute");
-const reportEvidenceRoutes = require("./src/routes/reportEvidenceRoute");
-const caseReportEvidenceRoutes = require("./src/routes/caseReportRoute");
-const dashRoutes = require("./src/routes/dashRoute");
+// Swagger
+const { swaggerUi, swaggerSpec } = require("./src/swagger");
 
 const corsOptions = {
   origin: "*",
@@ -20,7 +14,18 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// rotas da API
+// Documentação Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Rotas da API
+const patientRoutes = require("./src/routes/patienteRoute");
+const userRoutes = require("./src/routes/userRoute");
+const caseRoutes = require("./src/routes/caseRoute");
+const evidenceRoutes = require("./src/routes/evidenceRoute");
+const reportEvidenceRoutes = require("./src/routes/reportEvidenceRoute");
+const caseReportEvidenceRoutes = require("./src/routes/caseReportRoute");
+const dashRoutes = require("./src/routes/dashRoute");
+
 app.use("/api", userRoutes);
 app.use("/api/patient", patientRoutes);
 app.use("/api/cases", caseRoutes);
@@ -29,6 +34,7 @@ app.use("/api/report", reportEvidenceRoutes);
 app.use("/api/case/report", caseReportEvidenceRoutes);
 app.use("/api/dash", dashRoutes);
 
+// Rota simples de teste
 app.get("/home", (req, res) => {
   res.status(200).json({ msg: "Bem-vindo à API!" });
 });
