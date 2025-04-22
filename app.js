@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const prometheusMiddleware = require('express-prometheus-middleware');
 
 // Swagger
 const { swaggerUi, swaggerSpec } = require("./src/swagger");
@@ -13,6 +14,10 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(prometheusMiddleware({
+  metricsPath: '/metrics',
+  collectDefaultMetrics: true,
+}));
 
 // Documentação Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -47,7 +47,7 @@ const caseResponseDTO = z.object({
   patient: z.any(),
   title: z.string(),
   status: z.enum(["ABERTO", "FINALIZADO", "ARQUIVADO"]),
-  openedAt: z.date(), 
+  openedAt: z.date(),
   closedAt: z
     .any()
     .optional()
@@ -91,9 +91,14 @@ const caseUpdateStatusDTO = z.object({
 const caseUpdateDataDTO = z
   .object({
     title: z.string().optional(),
+    inquiryNumber: z.string().optional(),
+    caseType: caseTypeDTO.optional(),
     observations: z.string().optional(),
     location: locationDTO.optional(),
-    professional: z.array(z.string()).optional(), 
+    professional: z.array(z.string()).optional(),
+    requestingInstitution: z.string().optional(),
+    requestingAuthority: z.string().optional(),
+    questions: z.array(questionDTO).optional(),
   })
   .strict();
 
