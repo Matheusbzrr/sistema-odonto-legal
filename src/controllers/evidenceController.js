@@ -13,7 +13,7 @@ const createEvidence = async (req, res) => {
 
   try {
     const validated = evidenceDTO.createEvidenceDTO.parse(req.body);
-    await evidenceService.createEvidence(req.userId, validated, req.query.protocol);
+    await evidenceService.createEvidence(req.userId, req.userRole, validated, req.query.protocol);
     return res.status(201).json("Evidencia adicionada no caso com sucesso!");
   } catch (error) {
     if (error instanceof z.ZodError) {
