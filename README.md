@@ -60,10 +60,10 @@ Este repositório corresponde ao **backend** da aplicação, desenvolvido com fo
 ---
 ## ⚙️ Como Rodar o Projeto
 
-- É necessario um arquivo .env na raiz do projeto apontando as seguintes variaveis:
-  MONGO_URI=(LinkDoMongo)
-  PORT=(SuaPorta)
-  SECRET=(SuaChaveParaJwt)
+**É necessario um arquivo .env na raiz do projeto apontando as seguintes variaveis:**
+- MONGO_URI=(LinkDoMongo)
+- PORT=(SuaPorta)
+- SECRET=(SuaChaveParaJwt)
 
 ```bash
 git clone https://github.com/Matheusbzrr/sistema-odonto-legal.git
