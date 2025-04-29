@@ -1,10 +1,23 @@
 const evidenceRepository = require("../repositories/evidenceRepository");
 const casesRepository = require("../repositories/caseRepository");
 
-const createEvidence = async (userId, data, protocol) => {
+const createEvidence = async (userId, userRole, data, protocol) => {
   const caseExists = await casesRepository.getCaseByProtocol(protocol);
   if (!caseExists) {
     throw { status: 404, message: "Caso não encontrado!" };
+  }
+
+  if (userRole === "ASSISTENTE") {
+    const isInvolved = caseExists.professional.some(
+      (professional) => professional._id.toString() === userId.toString()
+    );
+
+    if (!isInvolved) {
+      throw {
+        status: 401,
+        message: "O assistente não está envolvido nesse caso, portanto não pode adicionar evidência.",
+      };
+    }
   }
 
   if (caseExists.status === "FINALIZADO" || caseExists.status === "ARQUIVADO") {
