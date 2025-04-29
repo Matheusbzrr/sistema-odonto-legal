@@ -8,7 +8,7 @@ const registerUser = async (data) => {
     throw { status: 409, message: "Cpf já cadastrado!" };
   }
 
-  const salt = await bcrypt.genSalt(12);
+  const salt = await bcrypt.genSalt(8);
   const passwordHash = await bcrypt.hash(data.password, salt);
 
   data.password = passwordHash;
@@ -84,7 +84,7 @@ const updatePasswordUser = async (data) => {
     throw { status: 404, message: "Usuário não encontrado!" };
   }
 
-  const salt = await bcrypt.genSalt(12);
+  const salt = await bcrypt.genSalt(8);
   const passwordHash = await bcrypt.hash(data.password, salt);
 
   data.password = passwordHash;
@@ -108,5 +108,5 @@ module.exports = {
   getUserById,
   updateProfile,
   updatePasswordUser,
-  deleteUser
+  deleteUser,
 };
