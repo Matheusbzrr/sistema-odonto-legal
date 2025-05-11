@@ -26,11 +26,13 @@ const caseSchema = new mongoose.Schema(
       ref: "CaseReport",
     },
     protocol: { type: String, required: true, unique: true },
-    patient: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Patient",
-      required: true,
-    },
+    patient: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Patient",
+        required: true,
+      },
+    ],
     title: { type: String, required: true },
     status: {
       type: String,
@@ -51,10 +53,13 @@ const caseSchema = new mongoose.Schema(
     caseType: {
       type: String,
       enum: [
-        "COLETA DNA",
-        "EXAME MARCA DE MORDIDA",
-        "IDENTIFICAÇÃO DE VÍTIMA",
-        "LESÕES CORPORAIS",
+        "IDENTIFICAÇÃO",
+        "AVALIAÇÃO DE LESÕES CORPORAIS",
+        "COLETA DE PROVA",
+        "PERÍCIA DE RESPONSABILIDADE",
+        "EXAME DE VIOLÊNCIA",
+        "ANÁLISE MULTIVÍTIMA",
+        "OUTROS",
       ],
       required: true,
     },

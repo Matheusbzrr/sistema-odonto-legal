@@ -15,7 +15,7 @@ const swaggerDefinition = {
     { name: "Evidências", description: "Gerenciamento de evidências" },
     { name: "Laudos de Evidência", description: "Geração de laudos" },
     { name: "Relatórios de Casos", description: "Geração de relatórios" },
-    { name: "Dashboard", description: "Dados estatísticos" }
+    { name: "Dashboard", description: "Dados estatísticos" },
   ],
   servers: [
     {
@@ -40,17 +40,23 @@ const swaggerDefinition = {
         type: "object",
         properties: {
           protocol: { type: "string", example: "ABC123" },
-          patient: { type: "string", example: "uuid-do-paciente" },
-          title: { type: "string", example: "Identificação de vítima" },
+          patient: {
+            type: "array",
+            items: { type: "string", example: "(adicione o NIC da(s) vítima(s))" },
+          },
+          title: { type: "string", example: "Identificação de vítimas" },
           caseType: {
             type: "string",
             enum: [
-              "COLETA DNA",
-              "EXAME MARCA DE MORDIDA",
-              "IDENTIFICAÇÃO DE VÍTIMA",
-              "LESÕES CORPORAIS",
+              "IDENTIFICAÇÃO",
+              "AVALIAÇÃO DE LESÕES CORPORAIS",
+              "COLETA DE PROVA",
+              "PERÍCIA DE RESPONSABILIDADE",
+              "EXAME DE VIOLÊNCIA",
+              "ANÁLISE MULTIVÍTIMA",
+              "OUTROS",
             ],
-            example: "LESÕES CORPORAIS",
+            example: "IDENTIFICAÇÃO",
           },
           inquiryNumber: { type: "string", example: "2024/001" },
           requestingInstitution: { type: "string", example: "Polícia Civil" },
@@ -83,7 +89,7 @@ const swaggerDefinition = {
               complement: { type: "string", example: "Bloco B, Apto 303" },
             },
           },
-         
+
           professional: {
             type: "array",
             items: { type: "string", example: "67ef47cfcf7d324047b98076" },

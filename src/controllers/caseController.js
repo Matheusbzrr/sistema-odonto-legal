@@ -11,6 +11,7 @@ const createCase = async (req, res) => {
   try {
     const userId = req.userId; // recupera o id do usuario q foi implantando no jwt e decodificado pelo middleware
     const validatedData = caseDTO.caseCreateDTO.parse(req.body);
+    console.log(validatedData)
     const result = await caseService.createCase(validatedData, userId); // passa os dados e o id do usuario achado
     return res.status(201).json(result);
   } catch (error) {

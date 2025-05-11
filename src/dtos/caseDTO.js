@@ -17,15 +17,18 @@ const questionDTO = z.object({
 });
 
 const caseTypeDTO = z.enum([
-  "COLETA DNA",
-  "EXAME MARCA DE MORDIDA",
-  "IDENTIFICAÇÃO DE VÍTIMA",
-  "LESÕES CORPORAIS",
+  "IDENTIFICAÇÃO",
+  "AVALIAÇÃO DE LESÕES CORPORAIS",
+  "COLETA DE PROVA",
+  "PERÍCIA DE RESPONSABILIDADE",
+  "EXAME DE VIOLÊNCIA",
+  "ANÁLISE MULTIVÍTIMA",
+  "OUTROS",
 ]);
 
 const caseCreateDTO = z
   .object({
-    nic: z.string().min(1, "NIC é obrigatório."),
+    nic: z.array(z.string()).min(1, "É necessário informar ao menos 1 NIC."),
     title: z.string().min(3, "O título deve ter pelo menos 3 caracteres."),
     inquiryNumber: z.string(),
     caseType: caseTypeDTO,

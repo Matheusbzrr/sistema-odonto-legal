@@ -10,6 +10,17 @@ const LocationSchema = new mongoose.Schema({
   complement: { type: String },
 });
 
+const ToothAnnotationSchema = new mongoose.Schema({
+  tooth: String,
+  note: String,
+});
+
+// Anatomical region annotation
+const RegionAnnotationSchema = new mongoose.Schema({
+  region: String,
+  note: String,
+});
+
 const patientSchema = new mongoose.Schema(
   {
     nic: { type: String, required: true, unique: true },
@@ -25,6 +36,12 @@ const patientSchema = new mongoose.Schema(
       type: String,
       enum: ["MASCULINO", "FEMININO", "NAO-BINARIO", "OUTRO"],
     },
+    ethnicity: {
+      type: String,
+      enum: ["BRANCA", "PRETA", "PARDA", "AMARELA", "INDÍGENA", "NÃO INFORMADA"],
+    },
+    odontogram: [ToothAnnotationSchema],
+    anatomicalRegions: [RegionAnnotationSchema],
 
     idCase: { type: mongoose.Schema.Types.ObjectId, ref: "Case" },
   },

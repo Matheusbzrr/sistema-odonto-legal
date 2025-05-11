@@ -3,14 +3,27 @@ const patientService = require("./patientService");
 const { v4: uuidv4 } = require("uuid");
 // cria novo caso
 const createCase = async (data, userId) => {
-  const patient = await patientService.getPatientByNic(data.nic);
-
-  const patientsInCase = await caseRepository.getCasesByPatients(patient._id);
-  if (patientsInCase.length > 0) {
+  if (!Array.isArray(data.nic)) {
     throw {
-      status: 409,
-      message: `Paciente com NIC ${data.nic} já possui um caso registrado.`,
+      status: 400,
+      message: "O campo 'nic' deve ser uma lista de NICs.",
     };
+  }
+
+  const patients = [];
+
+  for (const nic of data.nic) {
+    const patient = await patientService.getPatientByNic(nic);
+
+    const patientsInCase = await caseRepository.getCasesByPatients(patient._id);
+    if (patientsInCase.length > 0) {
+      throw {
+        status: 409,
+        message: `Vitima com NIC ${nic} já possui um caso registrado.`,
+      };
+    }
+
+    patients.push(patient);
   }
 
   const protocol = uuidv4().split("-")[0];
@@ -18,13 +31,15 @@ const createCase = async (data, userId) => {
   const caseCreated = await caseRepository.createCase(
     data,
     userId,
-    patient._id,
+    patients.map((p) => p._id), 
     protocol
-  ); // passa o id do usuario parao repositorio
+  );
 
-  await patientService.updatePatient(patient.nic, {
-    $push: { idCase: caseCreated._id },
-  });
+  for (const patient of patients) {
+    await patientService.updatePatient(patient.nic, {
+      $push: { idCase: caseCreated._id },
+    });
+  }
 
   return { message: "Caso criado com sucesso!" };
 };
