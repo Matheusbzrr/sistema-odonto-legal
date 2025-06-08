@@ -31,6 +31,7 @@ const evidenceRoutes = require("./src/routes/evidenceRoute");
 const reportEvidenceRoutes = require("./src/routes/reportEvidenceRoute");
 const caseReportEvidenceRoutes = require("./src/routes/caseReportRoute");
 const dashRoutes = require("./src/routes/dashRoute");
+const llmRoutes = require("./src/routes/llmRoute");
 
 app.use("/api", userRoutes);
 app.use("/api/patient", patientRoutes);
@@ -39,6 +40,7 @@ app.use("/api/evidence", evidenceRoutes);
 app.use("/api/report", reportEvidenceRoutes);
 app.use("/api/case/report", caseReportEvidenceRoutes);
 app.use("/api/dash", dashRoutes);
+app.use("/api/llm", llmRoutes);
 
 // Rota simples de teste
 app.get("/home", (req, res) => {
